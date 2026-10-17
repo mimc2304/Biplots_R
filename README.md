@@ -1,5 +1,19 @@
 # BiplotLab: guía para el grupo
 
+## ▶ Usar BiplotLab en línea (sin instalar nada)
+
+**[Abrir BiplotLab](https://connect.posit.cloud/evelyngarciav/content/01a1083c-acc0-d2c9-e8ea-154e5153f9b8)**
+<https://connect.posit.cloud/evelyngarciav/content/01a1083c-acc0-d2c9-e8ea-154e5153f9b8>
+
+Funciona en el navegador. Para probarlo al instante, en el panel **Datos** elige
+una **base de ejemplo** (PISA 2025, cantones del Ecuador, iris, césped de Seber
+u Ontario 1993) y luego el método en la barra de arriba. También puedes subir tu
+propio archivo. El plan gratuito tiene 4 GB de memoria (ver *Tamaño de la
+matriz* más abajo); para bases grandes, usa la app en tu computador
+(sección 2).
+
+---
+
 BiplotLab es un aplicativo para hacer análisis Biplot sin escribir código: se
 carga una base de datos, se elige el método en la barra de arriba y se ven el
 gráfico, las tablas y una lectura guiada. Está hecho en **R** con **Shiny**
@@ -73,6 +87,18 @@ la tecla `Esc`.
    valores etiquetados (p. ej. 1 = Hombre, 2 = Mujer) se leen con las
    etiquetas y quedan como nominales; la casilla «Usar las etiquetas de valor»
    permite leer los códigos numéricos.
+   Para probar sin archivo, usa **«O usa una base de ejemplo»**:
+
+   | Base | Tamaño | Para probar |
+   |---|---|---|
+   | PISA 2025 (países) | 90 × 12, `REGION` como grupo | HJ-Biplot, Bootstrap, Clúster |
+   | Cantones del Ecuador (energía) | 218 × 10 | HJ-Biplot, Bootstrap, Clúster (atípico URBINA JADO) |
+   | Iris | 150 × 4, `Species` como grupo | Canónico, Logístico, DPCA, Disjoint, Cenet |
+   | Césped de Seber | 48 × 3, factores `tratamiento` y `temperatura` | Canónico / MANOVA-Biplot con dos factores |
+   | Ontario 1993 | 18 genotipos × 9 ambientes | GGE-Biplot |
+
+   La Sintaxis R de un ejemplo lo lee con `ejemplo_biplot("pisa")` (o
+   `"cantones"`, `"iris"`, `"cesped"`, `"ontario"`).
 2. En **Tipo de columnas** revisa qué columnas quedaron como *nominales*. Son
    las columnas de agrupación (región, semana, grupo…). Sirven para colorear y
    agrupar, pero **nunca** entran como variables en los ejes. La app las

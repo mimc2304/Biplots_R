@@ -124,18 +124,40 @@ primera_columna_a_nombres <- function(datos) {
 #'   variable de grupo.
 #' - `"cantones"`: 218 cantones del Ecuador × 10 variables de energía.
 #'   Incluye el atípico URBINA JADO.
+#' - `"iris"`: 150 flores × 4 medidas; `Species` es el grupo (Canónico,
+#'   Logístico, DPCA, Disjoint, Cenet).
+#' - `"cesped"`: césped de Seber, 3 respuestas con dos factores (tratamiento y
+#'   temperatura) para el Canónico / MANOVA-Biplot.
+#' - `"ontario"`: 18 genotipos × 9 ambientes de Ontario 1993 (GGE-Biplot).
 #'
-#' @param nombre `"pisa"` o `"cantones"`.
+#' @param nombre `"pisa"`, `"cantones"`, `"iris"`, `"cesped"` u `"ontario"`.
 #' @export
-ejemplo_biplot <- function(nombre = c("pisa", "cantones")) {
+ejemplo_biplot <- function(nombre = c("pisa", "cantones", "iris", "cesped", "ontario")) {
   nombre <- match.arg(nombre)
-  archivo <- switch(nombre, pisa = "pisa2025_paises.csv", cantones = "cantones_energia.csv")
+  if (nombre == "iris") {
+    datos <- datasets::iris
+    datos$Species <- as.character(datos$Species)
+    rownames(datos) <- paste0(substr(datos$Species, 1, 3), sequence(table(datos$Species)))
+    return(datos)
+  }
+  archivo <- switch(nombre, pisa = "pisa2025_paises.csv", cantones = "cantones_energia.csv",
+                    cesped = "cesped_seber.csv", ontario = "ontario.csv")
   ruta <- system.file("extdata", archivo, package = "biplotlab")
   if (!nzchar(ruta)) ruta <- file.path("inst", "extdata", archivo)  # durante el desarrollo
   datos <- utils::read.csv(ruta, check.names = FALSE, stringsAsFactors = FALSE,
                            fileEncoding = "UTF-8")
+  if (nombre == "cesped") return(datos)  # sin columna de nombres: los factores van primero
   primera_columna_a_nombres(datos)
 }
+
+# Bases de ejemplo que ofrece el panel Datos (etiqueta = nombre en ejemplo_biplot())
+EJEMPLOS_BIPLOT <- c(
+  "PISA 2025: 90 países (HJ, Bootstrap, Clúster)" = "pisa",
+  "Cantones del Ecuador: energía (HJ, Bootstrap, Clúster)" = "cantones",
+  "Iris: 150 flores, 3 especies (Canónico, Logístico, DPCA, Disjoint, Cenet)" = "iris",
+  "Césped de Seber: dos factores (Canónico / MANOVA)" = "cesped",
+  "Ontario 1993: 18 genotipos × 9 ambientes (GGE)" = "ontario"
+)
 
 #' Detectar columnas de agrupación (nominales)
 #'

@@ -59,7 +59,11 @@ app_ui <- function(request) {
                        placeholder = "CSV, Excel, SPSS (.sav), Stata o Parquet"),
       shiny::uiOutput("selector_hoja"),
       shiny::uiOutput("opcion_etiquetas"),
-      shiny::checkboxInput("nombres_filas", "La primera columna tiene los nombres de los individuos", TRUE)
+      shiny::checkboxInput("nombres_filas", "La primera columna tiene los nombres de los individuos", TRUE),
+      shiny::selectInput("ejemplo", "O usa una base de ejemplo",
+                         c("Elegir una base de ejemplo..." = "", EJEMPLOS_BIPLOT)),
+      shiny::p(class = "bl-help",
+               "Las bases de ejemplo vienen con el aplicativo y sirven para probar cada método sin preparar un archivo.")
     ),
     shiny::uiOutput("info_datos"),
     seccion_opciones(
@@ -183,9 +187,10 @@ app_server <- function(input, output, session) {
   ediciones <- shiny::reactiveVal(0L)      # cambios hechos en la hoja
   version_tabla <- shiny::reactiveVal(0L)  # redibujar la hoja (carga o columnas nuevas)
   carga <- 0L                              # cuenta las cargas de archivo
+  fuente <- shiny::reactiveVal("archivo")  # "archivo" o "ejemplo": lo último que se cargó
 
   hojas <- shiny::reactive({
-    shiny::req(input$archivo)
+    shiny::req(input$archivo, fuente() == "archivo")
     ext <- tolower(tools::file_ext(input$archivo$name))
     if (ext %in% c("xls", "xlsx")) readxl::excel_sheets(input$archivo$datapath) else NULL
   })
@@ -195,7 +200,7 @@ app_server <- function(input, output, session) {
   })
   # SPSS y Stata: leer las etiquetas de valor (texto) o los códigos numéricos
   con_etiquetas <- shiny::reactive({
-    shiny::req(input$archivo)
+    shiny::req(input$archivo, fuente() == "archivo")
     tolower(tools::file_ext(input$archivo$name)) %in% c("sav", "zsav", "por", "dta")
   })
   output$opcion_etiquetas <- shiny::renderUI({
@@ -219,21 +224,35 @@ app_server <- function(input, output, session) {
         NULL
       })
     if (is.null(df)) return()
+    poner_datos(df, list(tipo = "archivo", nombre = input$archivo$name, hoja = hoja,
+                         nombres_filas = input$nombres_filas,
+                         etiquetas = if (con_etiquetas()) input$etiquetas %||% TRUE),
+                input$archivo$name)
+  }
+  poner_datos <- function(df, origen, etiqueta) {
     carga <<- carga + 1L
-    d <- list(df = df,
-              origen = list(tipo = "archivo", nombre = input$archivo$name, hoja = hoja,
-                            nombres_filas = input$nombres_filas,
-                            etiquetas = if (con_etiquetas()) input$etiquetas %||% TRUE),
-              etiqueta = input$archivo$name, carga = carga)
+    d <- list(df = df, origen = origen, etiqueta = etiqueta, carga = carga)
     original(d)
     ediciones(0L)
     datos(d)
     version_tabla(version_tabla() + 1L)
   }
-  shiny::observeEvent(input$archivo, cargar_archivo())
+  shiny::observeEvent(input$archivo, {
+    fuente("archivo")
+    shiny::updateSelectInput(session, "ejemplo", selected = "")
+    cargar_archivo()
+  })
   shiny::observeEvent(list(input$hoja, input$nombres_filas, input$etiquetas), {
-    if (!is.null(input$archivo)) cargar_archivo()
+    if (!is.null(input$archivo) && fuente() == "archivo") cargar_archivo()
   }, ignoreInit = TRUE)
+  # Bases de ejemplo: se leen con ejemplo_biplot(), así la Sintaxis R las reproduce
+  shiny::observeEvent(input$ejemplo, {
+    shiny::req(nzchar(input$ejemplo))
+    fuente("ejemplo")
+    df <- ejemplo_biplot(input$ejemplo)
+    poner_datos(df, list(tipo = "ejemplo", nombre = input$ejemplo),
+                names(EJEMPLOS_BIPLOT)[EJEMPLOS_BIPLOT == input$ejemplo])
+  })
 
   # Guardar un cambio de la hoja: los análisis reciben la copia editada y su
   # Sintaxis R lee el archivo editado que se descarga con el botón CSV
@@ -263,7 +282,7 @@ app_server <- function(input, output, session) {
     d <- datos()
     if (is.null(d)) {
       return(shiny::div(class = "bl-info bl-vacio", shiny::icon("circle-info"),
-                        "Aún no hay datos. Elige un archivo para empezar."))
+                        "Aún no hay datos. Elige un archivo o una base de ejemplo para empezar."))
     }
     n <- ediciones()
     shiny::div(class = "bl-info",

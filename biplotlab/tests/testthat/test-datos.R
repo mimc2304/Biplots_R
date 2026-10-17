@@ -68,3 +68,17 @@ test_that("lee Stata (.dta) y Parquet", {
   expect_true(is.numeric(r2$n))
   expect_error(leer_datos(tempfile(fileext = ".json")), "Formato no soportado")
 })
+
+test_that("las bases de ejemplo del panel Datos se leen y se reproducen en la Sintaxis R", {
+  for (nm in EJEMPLOS_BIPLOT) {
+    d <- ejemplo_biplot(nm)
+    expect_s3_class(d, "data.frame")
+    expect_gt(nrow(d), 10)
+    expect_false(anyDuplicated(rownames(d)) > 0)
+    expect_identical(sintaxis_lectura(list(tipo = "ejemplo", nombre = nm)),
+                     sprintf("datos <- ejemplo_biplot(\"%s\")", nm))
+  }
+  expect_equal(dim(ejemplo_biplot("ontario")), c(18, 9))
+  expect_true("Species" %in% detectar_nominales(ejemplo_biplot("iris")))
+  expect_true(all(c("tratamiento", "temperatura") %in% detectar_nominales(ejemplo_biplot("cesped"))))
+})
