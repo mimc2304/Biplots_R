@@ -2,8 +2,8 @@
 
 ## ▶ Usar BiplotLab en línea (sin instalar nada)
 
-**[Abrir BiplotLab](https://connect.posit.cloud/evelyngarciav/content/01a1083c-acc0-d2c9-e8ea-154e5153f9b8)**
-<https://connect.posit.cloud/evelyngarciav/content/01a1083c-acc0-d2c9-e8ea-154e5153f9b8>
+**[Abrir BiplotLab](https://01a1083c-acc0-d2c9-e8ea-154e5153f9b8.share.connect.posit.cloud/)**
+<https://01a1083c-acc0-d2c9-e8ea-154e5153f9b8.share.connect.posit.cloud/>
 
 Funciona en el navegador. Para probarlo al instante, en el panel **Datos** elige
 una **base de ejemplo** (PISA 2025, cantones del Ecuador, iris, césped de Seber
