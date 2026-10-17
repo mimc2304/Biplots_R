@@ -25,18 +25,11 @@ vector_a_r <- function(v, sangria = 4) {
 
 #' Cabecera de la Sintaxis R: cómo cargar (o instalar) BiplotLab
 #'
-#' BiplotLab es el paquete del grupo y no está en CRAN. La sintaxis lo carga
-#' con `library(biplotlab)` y explica cómo instalarlo una sola vez desde el
-#' archivo `biplotlab_0.1.0.tar.gz` (o la carpeta `biplotlab`) si R responde
-#' "there is no package called 'biplotlab'".
+#' BiplotLab no está en CRAN: se instala una vez desde el repositorio de
+#' GitHub del grupo y la sintaxis lo carga con `library(biplotlab)`.
 #' @export
 sintaxis_paquete <- function() {
-  c("# BiplotLab es el paquete del grupo: NO está en CRAN, por eso install.packages(\"biplotlab\")",
-    "# no lo encuentra. Si R dice \"there is no package called 'biplotlab'\", instálalo UNA vez:",
-    "#   install.packages(c(\"shiny\", \"bslib\", \"DT\", \"ggplot2\", \"ggrepel\", \"htmltools\",",
-    "#                      \"colourpicker\", \"cluster\", \"readxl\", \"writexl\", \"haven\", \"nanoparquet\"))",
-    "#   install.packages(\"C:/ruta/biplotlab_0.1.0.tar.gz\", repos = NULL, type = \"source\")",
-    "# (también sirve la carpeta: install.packages(\"C:/ruta/biplotlab\", repos = NULL, type = \"source\"))",
+  c("# Instalar BiplotLab (una vez): remotes::install_github(\"mimc2304/Biplots_R\", subdir = \"biplotlab\")",
     "library(biplotlab)")
 }
 

@@ -530,9 +530,9 @@ mod_gge_server <- function(id, datos, compartido = NULL) {
         ranking_ambientes = sprintf("grafico <- gge_ranking_ambientes(desc, %s)", ej),
         ranking_genotipos = sprintf("grafico <- gge_ranking_genotipos(desc, %s)", ej))
       lineas <- c(
-        sprintf("# GGE-Biplot generado con BiplotLab (código autónomo): %s",
+        sprintf("# GGE-Biplot: %s",
                 names(gge_menu_herramientas(nombre_filas(), nombre_columnas()))[GGE_HERRAMIENTAS == h]),
-        "# Necesita los paquetes ggplot2 y ggrepel: install.packages(c(\"ggplot2\", \"ggrepel\"))",
+        "# Requiere ggplot2 y ggrepel: install.packages(c(\"ggplot2\", \"ggrepel\"))",
         "",
         "# ---- Funciones del módulo GGE ----",
         sintaxis_funciones_gge(),

@@ -376,7 +376,7 @@ mod_neutro_server <- function(id, datos) {
           sprintf("regla <- c(%s)", paste(sprintf("%s = \"%s\"", encodeString(names(r), quote = "`"), r), collapse = ",\n           ")),
           sprintf("t <- ternas_desde_respuestas(datos, %s, regla)", vector_a_r(input$vars_resp, 37)))
       }
-      paste(c("# HJ-Biplot neutrosófico generado con BiplotLab", sintaxis_paquete(), "",
+      paste(c("# HJ-Biplot neutrosófico", sintaxis_paquete(), "",
               sintaxis_lectura(d$origen), "", entrada, "",
               "res <- hj_neutrosofico(t$T, t$I, t$F)   # S = T - I - F, centrado, SVD, J = U D, H = V D",
               "res$inercia",

@@ -541,7 +541,7 @@ mod_equipo_server <- function(id, method, datos) {
       grafico <- if (is_fact)
         sprintf("plot_biplot(X, res$fact, type = \"%s\", dims = c(%d, %d))", input$type, input$dx, input$dy)
       else sprintf("plot_logistic(res, dims = c(%d, %d), prob = %s)", input$dx, input$dy, input$prob)
-      paste(c(sprintf("# %s generado con BiplotLab", titulo[[method]]), sintaxis_paquete(), "",
+      paste(c(sprintf("# %s", titulo[[method]]), sintaxis_paquete(), "",
               lectura, "", sel_txt, calculo, "", if (is_fact) "eigen_table(X, res$fact)", grafico),
             collapse = "\n")
     })

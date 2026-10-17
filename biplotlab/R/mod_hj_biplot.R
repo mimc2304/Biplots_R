@@ -504,7 +504,7 @@ mod_hj_server <- function(id, datos, compartido = NULL) {
       r <- res_ok()
       cg <- colores_grupos(); cv <- colores_variables()
       lineas <- c(
-        sprintf("# %s-Biplot generado con BiplotLab", r$tipo),
+        sprintf("# %s-Biplot", r$tipo),
         sintaxis_paquete(),
         "",
         sintaxis_lectura(datos()$origen),

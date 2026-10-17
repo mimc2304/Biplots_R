@@ -776,7 +776,7 @@ mod_canonico_server <- function(id, datos, compartido = NULL) {
       dos <- dm$dos
       na <- if (input$na_action == "impute") "impute" else "fail"
       c0 <- c(
-        "# Biplot canónico / MANOVA biplot generado con BiplotLab",
+        "# Biplot canónico / MANOVA-Biplot",
         sintaxis_paquete(),
         sintaxis_lectura(d$origen),
         sprintf("vars <- %s", vector_a_r(dm$vars)),

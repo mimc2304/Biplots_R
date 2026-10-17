@@ -70,6 +70,6 @@ test_that("todos los biplots tienen su pestaña Teoría completa", {
 test_that("la Sintaxis R explica cómo instalar BiplotLab, que no está en CRAN", {
   s <- sintaxis_paquete()
   expect_equal(tail(s, 1), "library(biplotlab)")
-  expect_true(any(grepl("repos = NULL, type = \"source\"", s, fixed = TRUE)))
+  expect_true(any(grepl("remotes::install_github(\"mimc2304/Biplots_R\", subdir = \"biplotlab\")", s, fixed = TRUE)))
   expect_true(all(startsWith(head(s, -1), "#")))
 })

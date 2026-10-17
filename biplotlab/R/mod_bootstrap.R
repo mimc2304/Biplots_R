@@ -205,7 +205,7 @@ mod_bootstrap_server <- function(id, datos, compartido = NULL) {
     sintaxis <- shiny::reactive({
       x <- bt(); u <- config_usada(); c0 <- u$cfg
       paste(c(
-        "# Bootstrap del HJ-Biplot (BiplotLab)",
+        "# Bootstrap del HJ-Biplot",
         sintaxis_hj_base(c0, llamar_hj = FALSE),
         "",
         "bt <- bootstrap_biplot(",

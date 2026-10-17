@@ -26,12 +26,11 @@ reproduce el resultado, para quien quiera usarlo directamente en R.
 > `leer_datos()`, …), así que empieza con `library(biplotlab)`. BiplotLab es el
 > paquete del grupo y **no está en CRAN**: `install.packages("biplotlab")` no lo
 > encuentra y R responde *there is no package called 'biplotlab'*. Se instala
-> una sola vez desde el archivo `biplotlab_0.1.0.tar.gz` (o desde esta carpeta):
+> una sola vez desde este repositorio (también instala las dependencias):
 >
 > ```r
-> install.packages(c("shiny", "bslib", "DT", "ggplot2", "ggrepel", "htmltools",
->                    "colourpicker", "cluster", "readxl", "writexl", "haven", "nanoparquet"))
-> install.packages("C:/ruta/biplotlab_0.1.0.tar.gz", repos = NULL, type = "source")
+> install.packages("remotes")
+> remotes::install_github("mimc2304/Biplots_R", subdir = "biplotlab")
 > library(biplotlab)
 > ```
 >
@@ -334,7 +333,7 @@ Cuando tu método funcione:
 
 | Problema | Solución |
 |---|---|
-| `there is no package called 'biplotlab'` (al pegar la Sintaxis R) | BiplotLab no está en CRAN: instálalo desde `biplotlab_0.1.0.tar.gz` con `install.packages("C:/ruta/biplotlab_0.1.0.tar.gz", repos = NULL, type = "source")` (ver arriba). |
+| `there is no package called 'biplotlab'` (al pegar la Sintaxis R) | BiplotLab no está en CRAN: instálalo con `remotes::install_github("mimc2304/Biplots_R", subdir = "biplotlab")` (ver arriba). |
 | `there is no package called '...'` (otro paquete) | Falta un paquete: instálalo con `install.packages("nombre")` o vuelve a ejecutar `iniciar.R`. |
 | `could not find function "calcular_gge"` | Revisa que reemplazaste **todas** las palabras `METODO` y que el archivo está en la carpeta `R/` (no en `inst/`). |
 | Mi botón sigue gris | Falta el paso 5: cambiar `proximamente(...)` por `analisis_gge()` en `R/registro_analisis.R`. |

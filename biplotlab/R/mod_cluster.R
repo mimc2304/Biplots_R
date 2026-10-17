@@ -284,7 +284,7 @@ mod_cluster_server <- function(id, datos, compartido = NULL) {
     sintaxis <- shiny::reactive({
       x <- cl(); c0 <- cfg()
       paste(c(
-        "# Clúster sobre las coordenadas del HJ-Biplot (BiplotLab)",
+        "# Clúster sobre las coordenadas del HJ-Biplot",
         sintaxis_hj_base(c0),
         "",
         sprintf("cl <- cluster_biplot(res, sobre = \"%s\", ejes = %s, metodo = \"%s\", k = %d)",
