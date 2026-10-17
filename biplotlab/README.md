@@ -34,7 +34,18 @@ cada archivo y cómo agregar tu método.
 - **R** 4.3 o posterior: <https://cran.r-project.org/>
 - **RStudio**: <https://posit.co/download/rstudio-desktop/>
 
-Los paquetes de R que usa la app se instalan solos la primera vez que la abres.
+Paquetes de R (CRAN). `iniciar.R` instala los que falten la primera vez:
+
+| Para qué | Paquetes |
+|---|---|
+| Para correr la app | `shiny`, `bslib`, `DT`, `ggplot2`, `ggrepel`, `htmltools`, `colourpicker`, `cluster`, `pkgload` |
+| Leer y exportar datos | `readxl`, `writexl`, `haven`, `nanoparquet` |
+| Opcionales (gráficos SVG, pruebas, desarrollo) | `svglite`, `MASS`, `testthat`, `roxygen2`, `metan` |
+
+El cálculo del HJ-Biplot **no usa ninguno de ellos**: está programado desde cero
+con R base (`svd()`, `sweep()`, `colMeans()`) siguiendo Galindo (1986). Los
+paquetes solo sirven para la interfaz, la lectura de archivos y los gráficos.
+`MASS` y `metan` se usan únicamente en las pruebas, para comparar resultados.
 
 ---
 
@@ -83,19 +94,40 @@ la tecla `Esc`.
 
 ---
 
-### Tamaño de la matriz
+### Tamaño de la matriz (disclaimer)
 
-No hay un número fijo de filas o columnas: depende de la memoria del equipo o
-del servidor (la app gratuita de Posit Connect Cloud tiene 4 GB). Medido con el
-aplicativo:
+No hay un número fijo de filas o columnas: el límite lo pone la **memoria (RAM)**
+del equipo donde corre la app, y en segundo lugar el tiempo de cálculo. Una
+matriz de n × p ocupa 8·n·p bytes, y el HJ-Biplot necesita varias copias a la
+vez (datos, matriz transformada, U, V y el gráfico): **reserva unas 5 veces el
+tamaño de la matriz en RAM**.
 
-| Parte | Hasta dónde va bien | Por qué |
+Medido con el aplicativo (HJ-Biplot, estandarizado, 3 ejes, R 4.6, PC de 32 GB):
+
+| Matriz (n × p) | Tiempo del HJ-Biplot | Comentario |
 |---|---|---|
-| Subir el archivo | 200 MB (`LIMITE_ARCHIVO_MB`) | Shiny solo acepta 5 MB si no se indica. |
-| HJ-Biplot | 100 000 × 50 en unos 2 s; 500 000 × 20 en unos 7 s | La SVD es rápida y la memoria crece en línea con el tamaño. |
-| Gráfico | Legible hasta unos pocos miles de puntos | Las etiquetas se ocultan solas cuando se superponen. |
-| Bootstrap | 5000 × 20 con 500 réplicas en unos 10 s | Repite la SVD B veces. |
-| Clúster | Hasta 5000 individuos (`LIMITE_CLUSTER`) | La matriz de distancias crece con n²: con 10 000 ocupa unos 4 GB. |
+| 5 000 × 20 | < 1 s | Uso normal. |
+| 100 000 × 50 | ~ 1,2 s | Fluido. |
+| 500 000 × 20 | ~ 2,3 s | Fluido. |
+| 1 000 000 × 50 | ~ 18 s | Solo en local: la matriz ocupa 400 MB y el cálculo unos 2 GB. |
+
+Según dónde se ejecute:
+
+| Dónde corre | Memoria | Tamaño máximo recomendado |
+|---|---|---|
+| **Local** (RStudio, `iniciar.R`) | La de tu equipo (8 a 32 GB) | Con 8 GB, hasta ~ 1 000 000 de celdas × 20 (matrices de ~ 1,5 GB). Con 32 GB, hasta ~ 50 millones de celdas (por ejemplo 1 000 000 × 50). |
+| **Posit Connect Cloud (plan gratuito)** | 4 GB | Hasta ~ 10 millones de celdas (por ejemplo 200 000 × 50). Más allá la app se queda sin memoria y se reinicia. |
+
+Límites propios de la app, aparte de la memoria:
+
+| Parte | Límite | Por qué |
+|---|---|---|
+| Subir el archivo | 200 MB (`LIMITE_ARCHIVO_MB` en `R/app.R`) | Shiny solo acepta 5 MB si no se indica. Un CSV de 1 000 000 × 50 pesa ~ 500 MB, así que antes de llegar al límite de memoria se llega a este: usa Parquet (mucho más liviano) o sube el límite. |
+| Gráfico | Legible hasta unos pocos miles de puntos | Las etiquetas se ocultan solas cuando se superponen; con muchos puntos tarda en dibujar. |
+| Bootstrap | 5000 × 20 con 500 réplicas en unos 10 s | Repite la SVD B veces: el tiempo crece con B. |
+| Clúster | Hasta 5000 individuos (`LIMITE_CLUSTER` en `R/calculo_cluster.R`) | La matriz de distancias crece con n²: con 10 000 ocupa unos 4 GB. |
+
+Las cifras de memoria son estimaciones; los tiempos son del HJ-Biplot.
 
 ## 4. Qué es cada archivo
 
