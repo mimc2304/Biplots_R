@@ -1,0 +1,38 @@
+Package: biplotlab
+Type: Package
+Title: Aplicativo de Métodos Biplot al Estilo jamovi
+Version: 0.1.0
+Authors@R: person("Grupo", "BiplotLab", email = "evelinvelez200@gmail.com", role = c("aut", "cre"))
+Description: Aplicativo Shiny que integra los métodos Biplot
+    (HJ-Biplot, biplots clásicos GH y JK y, progresivamente, los demás
+    métodos del grupo) con una interfaz al estilo jamovi: datos a la
+    izquierda, resultados a la derecha y la sintaxis R de cada análisis para
+    reproducirlo fuera de la aplicación.
+License: GPL-3
+Encoding: UTF-8
+Depends: R (>= 4.1)
+Imports:
+    shiny (>= 1.7),
+    bslib,
+    cluster,
+    colourpicker,
+    DT,
+    ggplot2 (>= 3.4),
+    ggrepel,
+    haven,
+    htmltools,
+    nanoparquet,
+    readxl,
+    writexl,
+    grDevices,
+    graphics,
+    grid,
+    stats,
+    tools,
+    utils
+Suggests:
+    MASS,
+    svglite,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+RoxygenNote: 7.3.1
