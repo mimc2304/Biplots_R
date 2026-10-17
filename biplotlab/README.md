@@ -42,11 +42,6 @@ Paquetes de R (CRAN). `iniciar.R` instala los que falten la primera vez:
 | Leer y exportar datos | `readxl`, `writexl`, `haven`, `nanoparquet` |
 | Opcionales (gráficos SVG, pruebas, desarrollo) | `svglite`, `MASS`, `testthat`, `roxygen2`, `metan` |
 
-El cálculo del HJ-Biplot **no usa ninguno de ellos**: está programado desde cero
-con R base (`svd()`, `sweep()`, `colMeans()`) siguiendo Galindo (1986). Los
-paquetes solo sirven para la interfaz, la lectura de archivos y los gráficos.
-`MASS` y `metan` se usan únicamente en las pruebas, para comparar resultados.
-
 ---
 
 ## 2. Cómo abrir la app
