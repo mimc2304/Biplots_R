@@ -256,7 +256,7 @@ puede completar entre todos.
 - En tu código llámalos con `paquete::funcion()`, por ejemplo
   `metan::gge(...)`. No uses `library()` dentro de la carpeta `R/`.
 
-**Paso 5. Activa tu botón.**
+**Paso 5. Activa tu botón..**
 En `R/registro_analisis.R` busca tu línea:
 
 ```r
