@@ -94,11 +94,12 @@ la tecla `Esc`.
    | Cantones del Ecuador (energía) | 218 × 10 | HJ-Biplot, Bootstrap, Clúster (atípico URBINA JADO) |
    | Iris | 150 × 4, `Species` como grupo | Canónico, Logístico, DPCA, Disjoint, Cenet |
    | Césped de Seber | 48 × 3, factores `tratamiento` y `temperatura` | Canónico / MANOVA-Biplot con dos factores |
-   | Ontario 1993 | 18 genotipos × 9 ambientes | GGE-Biplot | | Victimización en Ecuador (INEC) | 117.737 registros × 3 variables seleccionadas | HJ-Biplot neutrosófico |
+   | Ontario 1993 | 18 genotipos × 9 ambientes | GGE-Biplot |
+   | Victimización en Ecuador (INEC) | 117.737 registros × 3 variables seleccionadas | HJ-Biplot neutrosófico |
 
    La Sintaxis R de un ejemplo lo lee con `ejemplo_biplot("pisa")` (o
-   `"cantones"`, `"iris"`, `"cesped"`, `"ontario"`).
-2. En **Tipo de columnas** revisa qué columnas quedaron como *nominales*. Son
+`"cantones"`, `"iris"`, `"cesped"`, `"ontario"`, `"victimizacion"`).
+3. En **Tipo de columnas** revisa qué columnas quedaron como *nominales*. Son
    las columnas de agrupación (región, semana, grupo…). Sirven para colorear y
    agrupar, pero **nunca** entran como variables en los ejes. La app las
    propone sola; corrige si hace falta.
@@ -106,10 +107,10 @@ la tecla `Esc`.
    Enter), agregar o eliminar filas y columnas, restaurar el archivo original y
    descargar la versión editada en CSV o Excel. Los análisis usan los datos
    editados; el archivo original no se modifica.
-3. Elige un método en la barra de arriba (por ejemplo **HJ-Biplot**). A la
+4. Elige un método en la barra de arriba (por ejemplo **HJ-Biplot**). A la
    izquierda aparecen sus opciones y a la derecha los resultados, que se
    actualizan solos al cambiar algo.
-4. Cada método tiene botones para descargar el gráfico (PNG, PDF, SVG) y las
+5. Cada método tiene botones para descargar el gráfico (PNG, PDF, SVG) y las
    tablas (Excel).
 
 ---
