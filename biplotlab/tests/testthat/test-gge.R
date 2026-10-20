@@ -241,6 +241,34 @@ test_that("GGE: la sintaxis R autónoma funciona sin BiplotLab", {
 })
 
 
+test_that("GGE: el biplot oculta lo que no llega a la calidad mínima en el plano", {
+  res <- calcular_gge(ontario(), particion = "GH")
+  q <- round(gge_resultados(res)$calidad_filas[, "Plano"])
+  expect_equal(unname(q[c("kat", "fun", "ann", "rub")]), c(545, 402, 181, 96))
+  g <- gge_grafico_herramienta(res, "biplot", cal_filas = 400, cal_columnas = 1000)
+  textos <- unlist(lapply(capa(g, "GeomTextRepel"), `[[`, "label"))
+  expect_true(all(c("kat", "fun") %in% textos))
+  expect_false(any(c("ann", "rub") %in% textos))
+  expect_equal(sum(textos %in% names(q)), sum(q >= 400))
+  expect_false(any(colnames(res$tabla) %in% textos))
+  # Sin mínimo se dibujan todos
+  g0 <- gge_grafico_herramienta(res, "biplot")
+  textos0 <- unlist(lapply(capa(g0, "GeomTextRepel"), `[[`, "label"))
+  expect_true(all(c(names(q), colnames(res$tabla)) %in% textos0))
+})
+
+test_that("GGE: quién ganó dónde se encuadra con los puntos, no con las rectas", {
+  for (p in c("GH", "JK", "SQ", "HJ")) {
+    res <- calcular_gge(ontario(), particion = p)
+    co <- gge_coordenadas_grafico(res)
+    puntos <- rbind(co$genotipos[, c("x", "y")], co$ambientes[, c("x", "y")])
+    g <- gge_grafico_herramienta(res, "quien_gano_donde")
+    r <- ggplot2::ggplot_build(g)$layout$panel_params[[1]]
+    expect_equal(r$x.range, range(puntos$x) + c(-1, 1) * 0.05 * diff(range(puntos$x)))
+    expect_equal(r$y.range, range(puntos$y) + c(-1, 1) * 0.05 * diff(range(puntos$y)))
+  }
+})
+
 test_that("GGE dentro del aplicativo: plano 4:3 y volteo sin cambiar productos escalares", {
   res <- calcular_gge(ontario(), particion = "GH")
   for (h in GGE_HERRAMIENTAS) {

@@ -127,7 +127,13 @@ mod_gge_opciones_ui <- function(id) {
         cuando("biplot"),
         shiny::radioButtons(ns("mostrar"), "Mostrar",
                             c("Ambos" = "ambos", "Solo individuos" = "filas", "Solo variables" = "columnas"),
-                            inline = TRUE)
+                            inline = TRUE),
+        shiny::p(class = "bl-help",
+                 "Calidad de representación (CRFE) en el plano del gráfico, de 0 a 1000 (500 = 50 %). Se ocultan los que no llegan al mínimo."),
+        shiny::sliderInput(ns("cal_filas"), "Calidad mínima de individuos", min = 0, max = 1000,
+                           value = 0, step = 50),
+        shiny::sliderInput(ns("cal_columnas"), "Calidad mínima de variables", min = 0, max = 1000,
+                           value = 0, step = 50)
       )
     ),
 
@@ -276,6 +282,8 @@ mod_gge_server <- function(id, datos, compartido = NULL) {
       shiny::updateRadioButtons(session, "particion", selected = "GH")
       shiny::updateSelectInput(session, "herramienta", selected = "biplot")
       shiny::updateRadioButtons(session, "mostrar", selected = "ambos")
+      shiny::updateSliderInput(session, "cal_filas", value = 0)
+      shiny::updateSliderInput(session, "cal_columnas", value = 0)
       shiny::updateSelectInput(session, "eje_x", selected = 1)
       shiny::updateSelectInput(session, "eje_y", selected = 2)
       shiny::updateCheckboxInput(session, "voltear_h", value = FALSE)
@@ -373,7 +381,8 @@ mod_gge_server <- function(id, datos, compartido = NULL) {
       grafico <- do.call(gge_grafico_herramienta, c(
         list(r, h, ejes(), ambiente = input$ambiente, genotipo = input$genotipo,
              genotipo1 = input$genotipo1, genotipo2 = input$genotipo2,
-             mostrar = input$mostrar %||% "ambos", titulo = titulo),
+             mostrar = input$mostrar %||% "ambos", cal_filas = input$cal_filas %||% 0,
+             cal_columnas = input$cal_columnas %||% 0, titulo = titulo),
         opciones_grafico()))
       tablas <- gge_tabla_herramienta(r, h, ejes(), ambiente = input$ambiente,
                                       genotipo = input$genotipo, genotipo1 = input$genotipo1,
@@ -515,16 +524,32 @@ mod_gge_server <- function(id, datos, compartido = NULL) {
       ej <- paste(c(sprintf("ejes = c(%d, %d)", ejes()[1], ejes()[2]), extras), collapse = ", ")
       h <- herramienta()
       mostrar <- input$mostrar %||% "ambos"
+      cal_f <- if (h == "biplot" && mostrar != "columnas") input$cal_filas %||% 0 else 0
+      cal_c <- if (h == "biplot" && mostrar != "filas") input$cal_columnas %||% 0 else 0
+      ver_g <- if (mostrar == "columnas") ", ver_genotipos = character(0)" else
+        if (cal_f > 0) ", ver_genotipos = ver_filas" else ""
+      ver_a <- if (mostrar == "filas") ", ver_ambientes = character(0)" else
+        if (cal_c > 0) ", ver_ambientes = ver_columnas" else ""
       llamada <- switch(h,
-        biplot = sprintf("grafico <- gge_biplot_basico(desc, %s%s)", ej,
-                         switch(mostrar, filas = ", ver_ambientes = character(0)",
-                                columnas = ", ver_genotipos = character(0)", "")),
+        biplot = c(
+          if (cal_f > 0) c(sprintf("# Individuos con calidad en el plano de al menos %s por mil", cal_f),
+            "calidad <- round(resultados$calidad_filas[, \"Plano\"])",
+            sprintf("ver_filas <- names(calidad)[calidad >= %s]", cal_f)),
+          if (cal_c > 0) c(sprintf("# Variables con calidad en el plano de al menos %s por mil", cal_c),
+            "calidad <- round(resultados$calidad_columnas[, \"Plano\"])",
+            sprintf("ver_columnas <- names(calidad)[calidad >= %s]", cal_c)),
+          sprintf("grafico <- gge_biplot_basico(desc, %s%s%s)", ej, ver_g, ver_a)),
         examinar_ambiente = sprintf("grafico <- gge_examinar_ambiente(desc, %s, %s)", cadena(input$ambiente), ej),
         examinar_genotipo = sprintf("grafico <- gge_examinar_genotipo(desc, %s, %s)", cadena(input$genotipo), ej),
         relacion_ambientes = sprintf("grafico <- gge_relacion_ambientes(desc, %s)", ej),
         comparar_genotipos = sprintf("grafico <- gge_comparar_genotipos(desc, %s, %s, %s)",
                                      cadena(input$genotipo1), cadena(input$genotipo2), ej),
-        quien_gano_donde = sprintf("grafico <- gge_quien_gano_donde(desc, %s)", ej),
+        quien_gano_donde = c(
+          "# Encuadre con los puntos: las rectas de los sectores se cortan en el borde",
+          sprintf("coord <- gge_coordenadas_grafico(desc, ejes = c(%d, %d))", ejes()[1], ejes()[2]),
+          "puntos <- rbind(coord$genotipos[, c(\"x\", \"y\")], coord$ambientes[, c(\"x\", \"y\")])",
+          sprintf("grafico <- gge_quien_gano_donde(desc, %s) +", ej),
+          "  ggplot2::coord_equal(xlim = range(puntos$x), ylim = range(puntos$y))"),
         discriminacion = sprintf("grafico <- gge_dis_rep(desc, %s)", ej),
         media_estabilidad = sprintf("grafico <- gge_media_estabilidad(desc, %s)", ej),
         ranking_ambientes = sprintf("grafico <- gge_ranking_ambientes(desc, %s)", ej),
@@ -639,15 +664,28 @@ texto_tabla_gge <- function(herramienta, res, ejes, filas = "Individuos", column
 # Texto vacío -> valor por defecto
 `%|v|%` <- function(a, b) if (is.null(a) || !nzchar(a)) b else a
 
+# Nombres con calidad en el plano (por mil, redondeada como en la tabla) de al
+# menos `minimo`; NULL = todos
+gge_con_calidad <- function(calidad, minimo) {
+  if (is.null(minimo) || minimo <= 0) return(NULL)
+  q <- round(calidad[, "Plano"])
+  names(q)[q >= minimo]
+}
+
 # Gráfico de cada vista con las funciones de calculo_gge.R, más el título y el
-# subtítulo de la app
+# subtítulo de la app. cal_filas y cal_columnas (solo en el biplot): calidad
+# mínima en el plano para dibujar un individuo o una variable.
 gge_grafico_herramienta <- function(res, herramienta, ejes = c(1, 2), ambiente = NULL,
                                     genotipo = NULL, genotipo1 = NULL, genotipo2 = NULL,
-                                    mostrar = "ambos", titulo = NULL, ...) {
+                                    mostrar = "ambos", cal_filas = 0, cal_columnas = 0,
+                                    titulo = NULL, ...) {
+  if (herramienta == "biplot") calidad <- gge_resultados(res, ejes)
   grafico <- suppressMessages(switch(herramienta,
     biplot = gge_biplot_basico(res, ejes,
-                               ver_genotipos = if (mostrar == "columnas") character(0),
-                               ver_ambientes = if (mostrar == "filas") character(0), ...),
+                               ver_genotipos = if (mostrar == "columnas") character(0) else
+                                 gge_con_calidad(calidad$calidad_filas, cal_filas),
+                               ver_ambientes = if (mostrar == "filas") character(0) else
+                                 gge_con_calidad(calidad$calidad_columnas, cal_columnas), ...),
     examinar_ambiente  = gge_examinar_ambiente(res, ambiente, ejes, ...),
     examinar_genotipo  = gge_examinar_genotipo(res, genotipo, ejes, ...),
     relacion_ambientes = gge_relacion_ambientes(res, ejes, ...),
@@ -658,6 +696,15 @@ gge_grafico_herramienta <- function(res, herramienta, ejes = c(1, 2), ambiente =
     ranking_ambientes  = gge_ranking_ambientes(res, ejes, ...),
     ranking_genotipos  = gge_ranking_genotipos(res, ejes, ...),
     stop("Herramienta no reconocida. Usa: ", paste(GGE_HERRAMIENTAS, collapse = ", "), call. = FALSE)))
+
+  # Quién ganó dónde: encuadre con los puntos; las rectas de los sectores se
+  # cortan en el borde (si no, agrandan el plano y la figura queda pequeña)
+  if (herramienta == "quien_gano_donde") {
+    co <- gge_coordenadas_grafico(res, ejes)
+    puntos <- rbind(co$genotipos[, c("x", "y")], co$ambientes[, c("x", "y")])
+    grafico <- suppressMessages(grafico + ggplot2::coord_equal(xlim = range(puntos$x),
+                                                               ylim = range(puntos$y)))
+  }
 
   centrado <- names(GGE_OPCIONES_CENTRADO)[GGE_OPCIONES_CENTRADO == (res$centrado %||% "tester")]
   subtitulo <- paste0("GGE-Biplot - ", centrado, " - SVP ", res$particion,

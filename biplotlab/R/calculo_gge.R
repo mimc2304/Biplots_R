@@ -227,7 +227,7 @@ gge_biplot_basico <- function(datos,ejes=c(1,2),ver_ambientes = NULL,ver_genotip
                                                      xend = x, yend = y),
                                         colour = color_columnas,
                                         arrow = grid::arrow(length = grid::unit(0.2, "cm")))) +
-    ggplot2::geom_point(data =ambientes, ggplot2::aes(x,y),colour = color_columnas, size = tam_puntos)+
+    (if (!flechas) ggplot2::geom_point(data =ambientes, ggplot2::aes(x,y),colour = color_columnas, size = tam_puntos))+
     ggrepel::geom_text_repel(data = ambientes, ggplot2::aes(x, y, label = nombre),
                              colour = "black", size = tam_texto, fontface = "bold",
                              seed = 1,
