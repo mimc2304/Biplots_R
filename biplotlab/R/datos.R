@@ -129,15 +129,35 @@ primera_columna_a_nombres <- function(datos) {
 #' - `"cesped"`: césped de Seber, 3 respuestas con dos factores (tratamiento y
 #'   temperatura) para el Canónico / MANOVA-Biplot.
 #' - `"ontario"`: 18 genotipos × 9 ambientes de Ontario 1993 (GGE-Biplot).
-#'
-#' @param nombre `"pisa"`, `"cantones"`, `"iris"`, `"cesped"` u `"ontario"`.
+#' - `"victimizacion"`: encuesta de victimización del INEC,
+#'   variables I5301, I5304 e I5309 (HJ-Biplot neutrosófico).
+#' @param nombre `"pisa"`, `"cantones"`, `"iris"`, `"cesped"`, `"ontario"` o `"victimizacion"`.
 #' @export
-ejemplo_biplot <- function(nombre = c("pisa", "cantones", "iris", "cesped", "ontario")) {
+ejemplo_biplot <- function(nombre = c("pisa", "cantones", "iris", "cesped", "ontario", "victimizacion")) {
   nombre <- match.arg(nombre)
   if (nombre == "iris") {
     datos <- datasets::iris
     datos$Species <- as.character(datos$Species)
     rownames(datos) <- paste0(substr(datos$Species, 1, 3), sequence(table(datos$Species)))
+    return(datos)
+  }
+  if (nombre == "victimizacion") {
+    archivo <- "victimizacion_informantes(1).sav"
+    ruta <- system.file("extdata", archivo, package = "biplotlab")
+    if (!nzchar(ruta)) ruta <- file.path("inst", "extdata", archivo)
+    if (!file.exists(ruta)) stop("No se encontró el archivo: ", ruta)
+
+    variables <- c("I5301", "I5304", "I5309")
+    datos <- haven::read_sav(ruta, user_na = FALSE)
+    faltantes <- setdiff(variables, names(datos))
+    if (length(faltantes)) {
+      stop("Variables no encontradas: ", paste(faltantes, collapse = ", "))
+    }
+    datos <- convertir_etiquetadas(
+      datos[, variables, drop = FALSE],
+      etiquetas = TRUE
+    )
+    rownames(datos) <- paste0("Persona_", seq_len(nrow(datos)))
     return(datos)
   }
   archivo <- switch(nombre, pisa = "pisa2025_paises.csv", cantones = "cantones_energia.csv",
@@ -156,7 +176,8 @@ EJEMPLOS_BIPLOT <- c(
   "Cantones del Ecuador: energía (HJ, Bootstrap, Clúster)" = "cantones",
   "Iris: 150 flores, 3 especies (Canónico, Logístico, DPCA, Disjoint, Cenet)" = "iris",
   "Césped de Seber: dos factores (Canónico / MANOVA)" = "cesped",
-  "Ontario 1993: 18 genotipos × 9 ambientes (GGE)" = "ontario"
+  "Ontario 1993: 18 genotipos × 9 ambientes (GGE)" = "ontario",
+  "Victimización Ecuador (INEC): HJ-Biplot neutrosófico" = "victimizacion"
 )
 
 #' Detectar columnas de agrupación (nominales)
