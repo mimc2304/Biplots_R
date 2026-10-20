@@ -94,7 +94,7 @@ la tecla `Esc`.
    | Cantones del Ecuador (energía) | 218 × 10 | HJ-Biplot, Bootstrap, Clúster (atípico URBINA JADO) |
    | Iris | 150 × 4, `Species` como grupo | Canónico, Logístico, DPCA, Disjoint, Cenet |
    | Césped de Seber | 48 × 3, factores `tratamiento` y `temperatura` | Canónico / MANOVA-Biplot con dos factores |
-   | Ontario 1993 | 18 genotipos × 9 ambientes | GGE-Biplot |
+   | Ontario 1993 | 18 genotipos × 9 ambientes | GGE-Biplot | | Victimización en Ecuador (INEC) | 117.737 registros × 3 variables seleccionadas | HJ-Biplot neutrosófico |
 
    La Sintaxis R de un ejemplo lo lee con `ejemplo_biplot("pisa")` (o
    `"cantones"`, `"iris"`, `"cesped"`, `"ontario"`).
