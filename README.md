@@ -98,8 +98,8 @@ la tecla `Esc`.
    | Victimización en Ecuador (INEC) | 117.737 registros × 3 variables seleccionadas | HJ-Biplot neutrosófico |
 
    La Sintaxis R de un ejemplo lo lee con `ejemplo_biplot("pisa")` (o
-`"cantones"`, `"iris"`, `"cesped"`, `"ontario"`, `"victimizacion"`).
-3. En **Tipo de columnas** revisa qué columnas quedaron como *nominales*. Son
+   `"cantones"`, `"iris"`, `"cesped"`, `"ontario"`, `"victimizacion"`).
+2. En **Tipo de columnas** revisa qué columnas quedaron como *nominales*. Son
    las columnas de agrupación (región, semana, grupo…). Sirven para colorear y
    agrupar, pero **nunca** entran como variables en los ejes. La app las
    propone sola; corrige si hace falta.
@@ -107,10 +107,10 @@ la tecla `Esc`.
    Enter), agregar o eliminar filas y columnas, restaurar el archivo original y
    descargar la versión editada en CSV o Excel. Los análisis usan los datos
    editados; el archivo original no se modifica.
-4. Elige un método en la barra de arriba (por ejemplo **HJ-Biplot**). A la
+3. Elige un método en la barra de arriba (por ejemplo **HJ-Biplot**). A la
    izquierda aparecen sus opciones y a la derecha los resultados, que se
    actualizan solos al cambiar algo.
-5. Cada método tiene botones para descargar el gráfico (PNG, PDF, SVG) y las
+4. Cada método tiene botones para descargar el gráfico (PNG, PDF, SVG) y las
    tablas (Excel).
 
 ---
@@ -257,7 +257,7 @@ puede completar entre todos.
 - En tu código llámalos con `paquete::funcion()`, por ejemplo
   `metan::gge(...)`. No uses `library()` dentro de la carpeta `R/`.
 
-**Paso 5. Activa tu botón..**
+**Paso 5. Activa tu botón.**
 En `R/registro_analisis.R` busca tu línea:
 
 ```r

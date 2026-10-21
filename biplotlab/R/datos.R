@@ -142,7 +142,7 @@ ejemplo_biplot <- function(nombre = c("pisa", "cantones", "iris", "cesped", "ont
     return(datos)
   }
   if (nombre == "victimizacion") {
-    archivo <- "victimizacion_informantes(1).sav"
+    archivo <- "victimizacion_informantes.sav"
     ruta <- system.file("extdata", archivo, package = "biplotlab")
     if (!nzchar(ruta)) ruta <- file.path("inst", "extdata", archivo)
     if (!file.exists(ruta)) stop("No se encontró el archivo: ", ruta)
