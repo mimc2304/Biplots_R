@@ -11,6 +11,11 @@
 pal_groups <- c("#1f6f8b", "#e07a1f", "#3a9d5d", "#b23a48", "#6a4c93", "#8a6d3b",
                 "#2e86ab", "#f18f01", "#6b705c", "#c1121f")
 
+# Flechas de las variables: punta cerrada y rellena, para que se vea aun cuando
+# la flecha sea corta (p. ej. en el logístico, de P = 0.5 a P = prob)
+COLOR_FLECHA_EQUIPO <- "#b23a48"
+flecha_equipo <- function() grid::arrow(length = grid::unit(0.25, "cm"), angle = 22, type = "closed")
+
 theme_biplot <- function(base = 13) {
   theme_minimal(base_size = base) +
     theme(panel.grid.minor = element_blank(),
@@ -57,7 +62,8 @@ plot_biplot <- function(X, fact, type = "HJ", dims = c(1, 2), groups = NULL,
                                colour = "#33414a", max.overlaps = 25, segment.alpha = 0.3)
   }
   p <- p + geom_segment(data = C, aes(x = 0, y = 0, xend = x, yend = y),
-                        arrow = arrow(length = unit(0.18, "cm")), colour = "#b23a48", linewidth = 0.5)
+                        arrow = flecha_equipo(),
+                        colour = COLOR_FLECHA_EQUIPO, linewidth = 0.8, lineend = "round")
   if (col_labels)
     p <- p + geom_text_repel(data = C, aes(x, y, label = lab), size = label_size + 0.3,
                              colour = "#8c1d2b", fontface = "bold", max.overlaps = 40,
@@ -126,8 +132,9 @@ plot_logistic <- function(fit, dims = c(1, 2), groups = NULL, prob = 0.75, show_
                           colour = "#b23a48", linetype = "dotted", linewidth = 0.3)
   }
   p + geom_segment(data = Ar, aes(x = x0, y = y0, xend = x1, yend = y1),
-                   arrow = arrow(length = unit(0.18, "cm")), colour = "#b23a48", linewidth = 0.7) +
-    geom_point(data = Ar, aes(x0, y0), shape = 21, fill = "white", colour = "#b23a48", size = 1.8) +
+                   arrow = flecha_equipo(),
+                   colour = COLOR_FLECHA_EQUIPO, linewidth = 1, lineend = "round") +
+    geom_point(data = Ar, aes(x0, y0), shape = 21, fill = "white", colour = COLOR_FLECHA_EQUIPO, size = 2) +
     geom_text_repel(data = Ar, aes(x1, y1, label = Variable), size = label_size + 0.3,
                     colour = "#8c1d2b", fontface = "bold", max.overlaps = 40, segment.alpha = 0.3) +
     labs(x = if (is.null(xlab)) paste0("Dim ", dims[1]) else xlab, y = if (is.null(ylab)) paste0("Dim ", dims[2]) else ylab, title = title,
