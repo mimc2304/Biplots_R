@@ -67,7 +67,8 @@ plot_biplot <- function(X, fact, type = "HJ", dims = c(1, 2), groups = NULL,
   if (col_labels)
     p <- p + geom_text_repel(data = C, aes(x, y, label = lab), size = label_size + 0.3,
                              colour = "#8c1d2b", fontface = "bold", max.overlaps = 40,
-                             segment.alpha = 0.3)
+                             nudge_x = 0.05 * C$x, nudge_y = 0.05 * C$y,   # la etiqueta queda más allá de la punta
+                             min.segment.length = Inf, seed = 2)
   if (!is.null(Cen))
     p <- p + geom_point(data = Cen, aes(x, y), shape = 23, size = point_size + 2.5, fill = "#ffd166", colour = "#33414a", stroke = 0.9) +
       geom_text_repel(data = Cen, aes(x, y, label = lab), size = label_size, colour = "#33414a", fontface = "italic", max.overlaps = 40)
@@ -136,7 +137,9 @@ plot_logistic <- function(fit, dims = c(1, 2), groups = NULL, prob = 0.75, show_
                    colour = COLOR_FLECHA_EQUIPO, linewidth = 1, lineend = "round") +
     geom_point(data = Ar, aes(x0, y0), shape = 21, fill = "white", colour = COLOR_FLECHA_EQUIPO, size = 2) +
     geom_text_repel(data = Ar, aes(x1, y1, label = Variable), size = label_size + 0.3,
-                    colour = "#8c1d2b", fontface = "bold", max.overlaps = 40, segment.alpha = 0.3) +
+                    colour = "#8c1d2b", fontface = "bold", max.overlaps = 40,
+                    nudge_x = 0.5 * (Ar$x1 - Ar$x0), nudge_y = 0.5 * (Ar$y1 - Ar$y0),
+                    min.segment.length = Inf, seed = 2) +
     labs(x = if (is.null(xlab)) paste0("Dim ", dims[1]) else xlab, y = if (is.null(ylab)) paste0("Dim ", dims[2]) else ylab, title = title,
          caption = paste0("Círculo = punto con P(x=1)=0.5; flecha = dirección hasta P(x=1)=", prob)) +
     coord_equal() + theme_biplot()
