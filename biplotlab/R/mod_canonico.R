@@ -33,7 +33,7 @@ mod_canonico_opciones_ui <- function(id) {
   ayuda <- function(...) shiny::p(class = "bl-help", ...)
   shiny::tagList(
     encabezado_opciones("Biplot canónico / MANOVA",
-                        "Gabriel (1972) - Amaro, Vicente-Villardón y Galindo (2004, 2008)"),
+                        "Gabriel (1972) - Amaro, Vicente-Villardón y Galindo-Villardón (2004, 2008)"),
     seccion_opciones(
       "Variables y diseño",
       shiny::selectizeInput(ns("vars"), "Variables dependientes (escala)", choices = NULL, multiple = TRUE,
@@ -47,7 +47,7 @@ mod_canonico_opciones_ui <- function(id) {
         shiny::radioButtons(ns("efecto"), "Biplot a representar",
                             c("Total (todas las celdas)" = "total", "Filas (1.er factor)" = "filas",
                               "Columnas (2.º factor)" = "columnas", "Interacción" = "interaccion")),
-        ayuda("Amaro, Vicente-Villardón y Galindo (2004). Las sumas de cuadrados son secuenciales (tipo I);",
+        ayuda("Amaro, Vicente-Villardón y Galindo-Villardón (2004). Las sumas de cuadrados son secuenciales (tipo I);",
               "en diseños balanceados no depende del orden.")),
       ayuda("Los factores son las columnas nominales (de agrupación) marcadas en el panel Datos.")
     ),
@@ -248,7 +248,7 @@ mod_canonico_resultados_ui <- function(id) {
         shiny::tabPanel("Medias y regiones", shiny::uiOutput(ns("tab_medias"))),
         shiny::tabPanel("Variables", shiny::uiOutput(ns("tab_variables"))),
         shiny::tabPanel("Bootstrap", shiny::uiOutput(ns("tab_boot"))),
-        shiny::tabPanel(shiny::span(shiny::icon("book-open"), "Teoría"), teoria_ui("canonico")),
+        shiny::tabPanel(shiny::span(shiny::icon("book-open"), "Fundamentos"), teoria_ui("canonico")),
         shiny::tabPanel(
           shiny::span(shiny::icon("code"), "Sintaxis R"),
           shiny::div(class = "bl-code", shiny::verbatimTextOutput(ns("sintaxis"))),
@@ -259,9 +259,9 @@ mod_canonico_resultados_ui <- function(id) {
     shiny::div(class = "bl-actions",
                shiny::downloadButton(ns("excel"), "Exportar todas las tablas a Excel")),
     shiny::div(class = "res-ref", shiny::HTML(paste(
-      "Referencias: Gabriel (1972); Amaro, Vicente-Villardón y Galindo (2004), <i>Interciencia</i> 29(1), 26-32;",
-      "Amaro, Vicente-Villardón y Galindo (2008), <i>Investigación Operacional</i> 29(3), 231-241;",
-      "Krzanowski (1989); Aitchison (1986); Nieto, Galindo, Leiva y Vicente-Galindo (2015).")))
+      "Referencias: Gabriel (1972); Amaro, Vicente-Villardón y Galindo-Villardón (2004), <i>Interciencia</i> 29(1), 26-32;",
+      "Amaro, Vicente-Villardón y Galindo-Villardón (2008), <i>Investigación Operacional</i> 29(3), 231-241;",
+      "Krzanowski (1989); Aitchison (1986); Nieto, Galindo-Villardón, Leiva y Vicente-Galindo (2014).")))
   )
 }
 
@@ -528,7 +528,7 @@ mod_canonico_server <- function(id, datos, compartido = NULL) {
       content = function(file) {
         W <- (input$exp_ancho %||% 25) / 2.54; H <- (input$exp_alto %||% 20) / 2.54
         e <- encuadre_biplot(grafico(), W = W, H = H, unidad = "in")
-        args <- list(filename = file, plot = grafico(), width = e$ancho, height = e$alto, units = "in",
+        args <- list(filename = file, plot = traducir_grafico(grafico()), width = e$ancho, height = e$alto, units = "in",
                      bg = input$fondo)
         if (ext == "png") args$dpi <- input$exp_dpi %||% 300
         suppressWarnings(do.call(ggplot2::ggsave, args))
@@ -767,7 +767,7 @@ mod_canonico_server <- function(id, datos, compartido = NULL) {
                      imput = "Imputacion", boot = "Bootstrap")
         tb <- tb[intersect(names(nombres), names(tb))]
         names(tb) <- nombres[names(tb)]
-        writexl::write_xlsx(tb, file)
+        guardar_xlsx(tb, file)
       })
 
     # ---- Sintaxis R ----

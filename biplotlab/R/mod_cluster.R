@@ -95,7 +95,7 @@ mod_cluster_resultados_ui <- function(id) {
         shiny::tabPanel("Grupos", shiny::uiOutput(ns("indicadores")), DT::DTOutput(ns("tabla_grupos"))),
         shiny::tabPanel("Perfiles", shiny::uiOutput(ns("nota_perfiles")), DT::DTOutput(ns("tabla_perfiles"))),
         shiny::tabPanel("Tabla cruzada", shiny::uiOutput(ns("cruzada")), shiny::tableOutput(ns("cruzada_tabla"))),
-        shiny::tabPanel(shiny::span(shiny::icon("book-open"), "Teoría"), teoria_ui("cluster")),
+        shiny::tabPanel(shiny::span(shiny::icon("book-open"), "Fundamentos"), teoria_ui("cluster")),
         shiny::tabPanel(
           shiny::span(shiny::icon("code"), "Sintaxis R"),
           shiny::div(class = "bl-code", shiny::verbatimTextOutput(ns("sintaxis"))),
@@ -243,10 +243,9 @@ mod_cluster_server <- function(id, datos, compartido = NULL) {
         ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
                        plot.title = ggplot2::element_text(size = 11))
     }
-    output$silueta_k <- shiny::renderPlot(grafico_k("Silueta media", "Silueta media (más alto = mejor)"), res = 96)
-    output$wss_k <- shiny::renderPlot(grafico_k("SC intra", "Suma de cuadrados intra (buscar el «codo»)"), res = 96)
-    output$tabla_k <- shiny::renderTable(cl()$eleccion_k, digits = 3, striped = TRUE,
-                                         format.args = list(decimal.mark = ","))
+    output$silueta_k <- shiny::renderPlot(traducir_grafico(grafico_k("Silueta media", "Silueta media (más alto = mejor)")), res = 96)
+    output$wss_k <- shiny::renderPlot(traducir_grafico(grafico_k("SC intra", "Suma de cuadrados intra (buscar el «codo»)")), res = 96)
+    output$tabla_k <- shiny::renderTable(con_decimales(traducir_tabla(cl()$eleccion_k)), striped = TRUE, align = "r")
 
     output$indicadores <- shiny::renderUI({
       x <- cl()
@@ -317,7 +316,7 @@ mod_cluster_server <- function(id, datos, compartido = NULL) {
         hojas <- list("Asignacion" = asign, "Grupos" = x$tamanos,
                       "Centroides" = x$centroides, "Numero de grupos" = x$eleccion_k)
         if (!is.null(x$perfiles)) hojas[["Perfiles"]] <- x$perfiles
-        writexl::write_xlsx(hojas, file)
+        guardar_xlsx(hojas, file)
       })
 
     cl

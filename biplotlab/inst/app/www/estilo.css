@@ -150,3 +150,9 @@ table.dataTable td, table.dataTable th { white-space: nowrap; }
 .bl-resumen th { width: 150px; background: #f3f5f8; color: #14304a; font-weight: 600; }
 .bl-teoria .bl-ref { padding-left: 1.6rem; text-indent: -1.6rem; margin: .2rem 0; text-align: left; }
 .bl-teoria-refs { margin-top: 1.4rem; border-top: 1px solid #d5dbe0; padding-top: .5rem; font-size: .86rem; color: #444; }
+
+/* Idioma de los resultados (ES | EN) */
+.bl-idioma { margin-left: auto; align-self: center; }
+.bl-idioma .shiny-input-container { margin: 0; width: auto; }
+.bl-idioma .form-check-inline { margin-right: 8px; }
+.bl-idioma .form-check-label { color: #c7d3e6; font-size: .8rem; }

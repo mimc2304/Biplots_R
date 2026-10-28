@@ -61,14 +61,14 @@ TEORIA <- list(
   # ---------------------------------------------------------------- HJ ------
   hj = list(
     titulo = "HJ-Biplot",
-    subtitulo = "Representación simultánea de individuos y variables con la misma calidad (Galindo, 1986)",
+    subtitulo = "Representación simultánea de individuos y variables con la misma calidad (Galindo-Villardón, 1986)",
     resumen = list(
       para_que = "Ver en un solo plano cómo se parecen los individuos, cómo se relacionan las variables y qué variables caracterizan a cada individuo o grupo.",
       entrada = "Matriz <b>individuos × variables numéricas</b> (de escala). Las columnas de grupo solo colorean.",
       no_usar = "Variables categóricas o códigos de grupo como si fueran números; matrices con datos faltantes; menos de 3 individuos.",
       lectura = "Ángulo entre flechas ≈ correlación; proyección de un punto sobre una flecha ≈ su valor; distancia entre puntos ≈ semejanza. Solo lo bien representado (CRFE alta)."),
     para_que = c(
-      "Es un análisis exploratorio que resume una matriz de datos en pocos ejes (normalmente un plano) y dibuja a la vez a los <b>individuos</b> (puntos) y a las <b>variables</b> (flechas). A diferencia de los biplots GH y JK de Gabriel (1971), el HJ-Biplot (Galindo, 1986) da la <b>misma calidad de representación</b> a filas y columnas, por eso ambos se pueden interpretar en el mismo gráfico.",
+      "Es un análisis exploratorio que resume una matriz de datos en pocos ejes (normalmente un plano) y dibuja a la vez a los <b>individuos</b> (puntos) y a las <b>variables</b> (flechas). A diferencia de los biplots GH y JK de Gabriel (1971), el HJ-Biplot (Galindo-Villardón, 1986) da la <b>misma calidad de representación</b> a filas y columnas, por eso ambos se pueden interpretar en el mismo gráfico.",
       "Se usa para describir patrones: qué individuos son parecidos, qué variables van juntas o se oponen, y qué variables explican la posición de cada individuo o grupo."),
     entrada = c(
       "Una fila por <b>individuo</b> (país, muestra, persona…) y una columna por <b>variable cuantitativa</b> (de escala). La primera columna del archivo da el nombre de cada individuo.",
@@ -104,7 +104,7 @@ TEORIA <- list(
       "Validado con MULTBIPLOT (PISA), biplotbootGUI (cantones) y el material del fitoplancton (pruebas en <code>tests/testthat</code>)."),
     referencias = list(
       modulo = c(
-        "Galindo, M. P. (1986). Una alternativa de representación simultánea: HJ-Biplot. <i>Qüestiió, 10</i>(1), 13-23. http://hdl.handle.net/2099/4523",
+        "Galindo-Villardón, M. P. (1986). Una alternativa de representación simultánea: HJ-Biplot. <i>Qüestiió, 10</i>(1), 13-23. http://hdl.handle.net/2099/4523",
         "Gabriel, K. R. (1971). The biplot graphic display of matrices with application to principal component analysis. <i>Biometrika, 58</i>(3), 453-467. https://doi.org/10.1093/biomet/58.3.453",
         "Gabriel, K. R. y Odoroff, C. L. (1990). Biplots in biomedical research. <i>Statistics in Medicine, 9</i>(5), 469-485. https://doi.org/10.1002/sim.4780090502",
         "Cascante-Yarlequé, R., Galindo-Villardón, P., Guevara-Viejó, F., Vicente-Villardón, J. L. y Vicente-Galindo, P. (2025). HJ-BIPLOT: A theoretical and empirical systematic review of its 38 years of history, using text mining and LLMs. <i>Mathematics, 13</i>(12), 1913. https://doi.org/10.3390/math13121913"),
@@ -148,8 +148,8 @@ TEORIA <- list(
       "Validado con biplotbootGUI (práctica de cantones)."),
     referencias = list(
       modulo = c(
-        "Nieto, A. B., Galindo, M. P., Leiva, V. y Vicente-Galindo, P. (2014). A methodology for biplots based on bootstrapping with R. <i>Revista Colombiana de Estadística, 37</i>(2), 367-397. https://doi.org/10.15446/rce.v37n2spe.47944",
-        "Galindo, M. P. (1986). Una alternativa de representación simultánea: HJ-Biplot. <i>Qüestiió, 10</i>(1), 13-23. http://hdl.handle.net/2099/4523"),
+        "Nieto, A. B., Galindo-Villardón, M. P., Leiva, V. y Vicente-Galindo, P. (2014). A methodology for biplots based on bootstrapping with R. <i>Revista Colombiana de Estadística, 37</i>(2), 367-397. https://doi.org/10.15446/rce.v37n2spe.47944",
+        "Galindo-Villardón, M. P. (1986). Una alternativa de representación simultánea: HJ-Biplot. <i>Qüestiió, 10</i>(1), 13-23. http://hdl.handle.net/2099/4523"),
       original = c(
         "Efron, B. y Tibshirani, R. J. (1993). <i>An introduction to the bootstrap</i>. Chapman & Hall."))),
 
@@ -439,7 +439,7 @@ TEORIA <- list(
       "Validado con matrices pequeñas de resultado conocido y con la base de victimización del INEC (pruebas en <code>tests/testthat/test-neutrosofico.R</code>)."),
     referencias = list(
       modulo = c(
-        "Galindo, M. P. (1986). Una alternativa de representación simultánea: HJ-Biplot. <i>Qüestiió, 10</i>(1), 13-23. http://hdl.handle.net/2099/4523"),
+        "Galindo-Villardón, M. P. (1986). Una alternativa de representación simultánea: HJ-Biplot. <i>Qüestiió, 10</i>(1), 13-23. http://hdl.handle.net/2099/4523"),
       original = c(
         "Galindo-Villardón, P. (2025). Analysis of customer perception of a new product using the Neutrosophic Biplot method. <i>Neutrosophic Sets and Systems, 89</i>, 34-49. https://doi.org/10.5281/zenodo.16420847",
         "Smarandache, F. (2014). <i>Introduction to neutrosophic statistics</i>. Sitech & Education Publishing."))),
@@ -464,7 +464,7 @@ TEORIA <- list(
       "<b>1. Centrado.</b> Determina qué parte de la variación se representa. <b>Por columna (G + GE)</b>, el modelo GGE: a cada valor se le resta la media de su ambiente, con lo que se elimina el efecto principal del ambiente. <b>Sin centrar</b>: se analizan los datos originales. <b>Global (E + G + GE)</b>: se resta la media general y se conserva el efecto del ambiente. <b>Doble (GE)</b>: se restan las medias de fila y de columna, y queda solo la interacción.",
       "<b>2. Escalado</b> (opcional). Cada columna se divide por su desviación estándar, de modo que todos los ambientes tengan la misma varianza y el mismo peso en el análisis.",
       "<b>3. Descomposición en valores singulares (SVD).</b> La tabla se descompone en ejes ordenados según la proporción de variación que explican. Los dos ejes elegidos forman el plano del biplot, y su porcentaje de inercia acumulado indica qué parte de la variación queda representada.",
-      "<b>4. Partición de los valores singulares.</b> Los valores singulares se reparten entre los marcadores de filas y de columnas. <b>GH</b> los asigna a los ambientes y conserva sus relaciones (adecuada para comparar ambientes); <b>JK</b> los asigna a los genotipos y conserva las distancias entre ellos (adecuada para comparar genotipos); <b>SQ</b> los reparte por igual (Gabriel, 1971);<b>HJ</b> los asigna a ambos y da la máxima calidad de representación a filas y columnas a la vez (Galindo-Villardón, 1986).",
+      "<b>4. Partición de los valores singulares.</b> Los valores singulares se reparten entre los marcadores de filas y de columnas. <b>GH</b> los asigna a los ambientes y conserva sus relaciones (adecuada para comparar ambientes); <b>JK</b> los asigna a los genotipos y conserva las distancias entre ellos (adecuada para comparar genotipos); <b>SQ</b> los reparte por igual (Gabriel, 1971); <b>HJ</b> los asigna a ambos y da la máxima calidad de representación a filas y columnas a la vez (Galindo-Villardón, 1986).",
       "<b>5. Resultados.</b> Inercia de cada eje, coordenadas, calidad de representación (CRFE) y contribución (CREF) de filas y columnas, además de la tabla propia de cada herramienta."),
     lectura = c(
       "<b>Biplot</b>: Representa simultáneamente los genotipos (puntos) y los ambientes (vectores). Las barras de calidad mínima permiten ocultar los elementos con menor calidad de representación en el plano.",
@@ -487,7 +487,7 @@ TEORIA <- list(
         "Frutos, E., Galindo-Villardón, P. y Leiva, V. (2014). An interactive biplot implementation in R for modeling genotype-by-environment interaction. <i>Stochastic Environmental Research and Risk Assessment, 28</i>(7), 1629-1641. https://doi.org/10.1007/s00477-013-0821-z"),
       original = c(
         "Gabriel, K. R. (1971). The biplot graphic display of matrices with application to principal component analysis. <i>Biometrika, 58</i>(3), 453-467. https://doi.org/10.1093/biomet/58.3.453",
-        "Galindo-Villardón, P. (1986). Una alternativa de representación simultánea: HJ-Biplot. <i>Qüestiió, 10</i>(1), 13-23. http://hdl.handle.net/2099/4523",
+        "Galindo-Villardón, M. P. (1986). Una alternativa de representación simultánea: HJ-Biplot. <i>Qüestiió, 10</i>(1), 13-23. http://hdl.handle.net/2099/4523",
         "Yan, W., Hunt, L. A., Sheng, Q. y Szlavnics, Z. (2000). Cultivar evaluation and mega-environment investigation based on the GGE biplot. <i>Crop Science, 40</i>(3), 597-605. https://doi.org/10.2135/cropsci2000.403597x",
         "Yan, W. y Tinker, N. A. (2006). Biplot analysis of multi-environment trial data: Principles and applications. <i>Canadian Journal of Plant Science, 86</i>(3), 623-645. https://doi.org/10.4141/P05-169")))
 )

@@ -40,7 +40,7 @@ tabla_apa <- function(df, titulo, nota = NULL, digits = 3, formatos = NULL, rown
     if (rownames) celdas <- c(list(htmltools::tags$td(class = "txt rn", rownames(df)[i])), celdas)
     htmltools::tags$tr(celdas)
   })
-  cab <- lapply(names(df), function(n) htmltools::tags$th(n))
+  cab <- lapply(traducir(names(df)), function(n) htmltools::tags$th(n))
   if (rownames) cab <- c(list(htmltools::tags$th(nombre_filas)), cab)
   htmltools::tags$div(class = "res-tabla",
     htmltools::tags$div(class = "res-titulo", titulo),

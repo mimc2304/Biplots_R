@@ -1,0 +1,177 @@
+# =============================================================================
+# Idioma de los resultados (español / inglés)
+#
+# La Dra. pidió poder llevar los resultados a artículos y a otras aplicaciones
+# en inglés o en castellano. El selector «ES | EN» de la barra superior cambia
+# los nombres de las tablas, los títulos y ejes de los gráficos, las hojas de
+# Excel y el separador decimal (coma en español, punto en inglés).
+#
+# Los cálculos no cambian: solo se traducen las etiquetas al mostrarlas, en
+# tabla_resultados(), render_biplot(), descarga_biplot() y guardar_xlsx().
+# Los nombres de individuos y variables (los datos del usuario) no se tocan.
+# =============================================================================
+
+# Etiquetas completas (la tabla o el gráfico usan exactamente este texto)
+IDIOMA_EN <- c(
+  # Inercia y ejes
+  "Eje" = "Axis", "Plano" = "Plane", "Valor propio" = "Eigenvalue",
+  "Valor singular" = "Singular value", "Inercia" = "Inertia",
+  "% Inercia" = "% Inertia", "% Acumulado" = "Cumulative %",
+  "% de inercia" = "% of inertia", "% acumulado" = "Cumulative %",
+  "Varianza explicada (%)" = "Explained variance (%)", "Acumulada (%)" = "Cumulative (%)",
+  "Sedimentación" = "Scree plot",
+  # Filas y columnas
+  "Individuo" = "Individual", "Individuos" = "Individuals", "Variable" = "Variable",
+  "Variables" = "Variables", "Observación" = "Observation", "Observaciones" = "Observations",
+  "Genotipo" = "Genotype", "Genotipos" = "Genotypes", "Ambiente" = "Environment",
+  "Ambientes" = "Environments", "Grupo" = "Group", "Grupos" = "Groups",
+  # Hojas de Excel
+  "Coordenadas" = "Coordinates", "Coordenadas individuos" = "Individual coordinates",
+  "Coordenadas variables" = "Variable coordinates",
+  "Coordenadas de las variables" = "Variable coordinates",
+  "CRFE individuos" = "CRFE individuals", "CRFE variables" = "CRFE variables",
+  "CREF individuos" = "CREF individuals", "CREF variables" = "CREF variables",
+  "Correlaciones" = "Correlations", "Intervalos" = "Intervals", "Replicas" = "Replicates",
+  "Centroides" = "Centroids", "Asignacion" = "Assignment", "Recodificacion" = "Recoding",
+  "Perfiles" = "Profiles",
+  # Clúster
+  "Tamaño" = "Size", "Silueta" = "Silhouette", "Silueta media" = "Mean silhouette",
+  "Miembros" = "Members", "SC intra" = "Within SS", "Centroide" = "Centroid",
+  "Número" = "Number", "Numero de grupos" = "Number of clusters",
+  # Bootstrap
+  "Estadístico" = "Statistic", "Media bootstrap" = "Bootstrap mean",
+  "Error estándar" = "Standard error", "LI percentil" = "Percentile LL",
+  "LS percentil" = "Percentile UL", "LI normal" = "Normal LL", "LS normal" = "Normal UL",
+  "Desviación estándar" = "Standard deviation",
+  # GGE
+  "Posición" = "Position", "Encima del promedio" = "Above average",
+  "Debajo del promedio" = "Below average", "Producto escalar" = "Scalar product",
+  "Valor en la tabla" = "Value in the table", "Media en la tabla" = "Mean in the table",
+  "Desv. estándar en la tabla" = "SD in the table",
+  "Media estimada (producto escalar)" = "Estimated mean (scalar product)",
+  "Diferencia (producto escalar)" = "Difference (scalar product)",
+  "Diferencia en la tabla" = "Difference in the table",
+  "Ganador según el biplot" = "Winner according to the biplot",
+  "Ganador en la tabla" = "Winner in the table", "Mejor según el biplot" = "Best according to the biplot",
+  "Longitud del vector" = "Vector length",
+  "Longitud del vector (discriminación)" = "Vector length (discrimination)",
+  "Coseno con el AEA (representatividad)" = "Cosine with the AEA (representativeness)",
+  "Ángulo con el AEA (°)" = "Angle with the AEA (°)",
+  "Proyección sobre el AEA (media)" = "Projection on the AEA (mean)",
+  "Distancia al AEA (inestabilidad)" = "Distance to the AEA (instability)",
+  "Distancia al ideal" = "Distance to the ideal", "Dibujada" = "Drawn",
+  # Neutrosófico y equipo
+  "Media de I" = "Mean of I", "Calidad (%)" = "Quality (%)", "% ceros" = "% zeros",
+  "Coef. no nulos" = "Non-zero coef.", "Coef. nulos" = "Zero coef.",
+  "Devianza intra" = "Within deviance", "Separación" = "Separation",
+  "Intercepto b0" = "Intercept b0", "% Correcto" = "% Correct",
+  "Sensibilidad (%)" = "Sensitivity (%)", "Especificidad (%)" = "Specificity (%)",
+  "p-valor" = "p-value", "Norma v" = "Norm v", "Cluster" = "Cluster",
+  "Silueta media (más alto = mejor)" = "Mean silhouette (higher = better)",
+  "Suma de cuadrados intra (buscar el «codo»)" = "Within sum of squares (look for the elbow)",
+  "Número de grupos" = "Number of clusters", "Elemento" = "Element",
+  # Hojas de Excel de los demás métodos
+  "Descriptivos" = "Descriptives", "Valores propios" = "Eigenvalues", "Autovalores" = "Eigenvalues",
+  "Medias" = "Means", "Correlaciones totales" = "Total correlations", "Regiones" = "Regions",
+  "Pares Hotelling" = "Hotelling pairs", "Imputacion" = "Imputation", "Particion" = "Partition",
+  "Ajuste" = "Fit", "Pertenencia" = "Membership", "Clusters" = "Clusters", "Sparsity" = "Sparsity"
+)
+
+# Partes de una etiqueta (ejes con su %, columnas numeradas, títulos)
+IDIOMA_EN_PARTES <- c(
+  "\\bEje\\b" = "Axis", "\\bejes\\b" = "axes", "\\beje\\b" = "axis",
+  "\\bPlano\\b" = "Plane", "\\bplano\\b" = "plane",
+  "\\bValor propio\\b" = "Eigenvalue", "\\bInercia\\b" = "Inertia",
+  "\\bCalidad\\b" = "Quality", "\\bCoordenada\\b" = "Coordinate", "\\bCarga\\b" = "Loading",
+  "Ángulo con eje" = "Angle with axis", "Ángulo" = "Angle",
+  "\\bLongitud\\b" = "Length", "\\bCentroide\\b" = "Centroid",
+  "Estandarizar columnas" = "Column standardization", "Centrar columnas" = "Column centering",
+  "Sin transformar" = "No transformation", "Doble centrado" = "Double centering",
+  "Por columna" = "By column", "Sin centrar" = "Uncentered", "Sin escalar" = "Unscaled",
+  "\\bcon\\b" = "with", "\\by\\b" = "and"
+)
+
+#' Idioma de los resultados en la sesión actual
+#'
+#' Lo fija el selector «ES | EN» de la app; fuera de Shiny es siempre "es".
+#' @return "es" o "en".
+#' @noRd
+idioma_actual <- function() {
+  s <- shiny::getDefaultReactiveDomain()
+  f <- if (!is.null(s)) s$userData$idioma
+  if (!is.function(f)) return("es")
+  tryCatch(f(), error = function(e) shiny::isolate(f())) %||% "es"
+}
+
+#' Traducir etiquetas de resultados al inglés
+#'
+#' @param x vector de texto.
+#' @param idioma "es" (no cambia nada) o "en".
+#' @return el mismo vector, traducido cuando la etiqueta es conocida.
+#' @noRd
+traducir <- function(x, idioma = idioma_actual()) {
+  if (!identical(idioma, "en") || !length(x) || !is.character(x)) return(x)
+  vapply(x, function(s) {
+    if (is.na(s)) return(s)
+    if (s %in% names(IDIOMA_EN)) return(unname(IDIOMA_EN[s]))
+    t <- s
+    for (p in names(IDIOMA_EN_PARTES)) t <- gsub(p, IDIOMA_EN_PARTES[[p]], t, perl = TRUE)
+    gsub("(\\d),(\\d)", "\\1.\\2", t)        # 28,37 % -> 28.37 %
+  }, character(1), USE.NAMES = FALSE)
+}
+
+# Tabla con columnas y textos fijos traducidos (los nombres de filas no cambian)
+traducir_tabla <- function(df, idioma = idioma_actual()) {
+  if (!identical(idioma, "en") || !is.data.frame(df)) return(df)
+  names(df) <- traducir(names(df), idioma)
+  for (j in seq_along(df)) {
+    v <- df[[j]]
+    if (is.factor(v)) levels(v) <- traducir_celdas(levels(v)) else if (is.character(v)) v <- traducir_celdas(v)
+    df[[j]] <- v
+  }
+  df
+}
+
+# En las celdas solo se traducen los textos fijos del aplicativo («Eje 1»,
+# «Encima del promedio»...), nunca los nombres que vienen de los datos
+traducir_celdas <- function(v) {
+  fijo <- !is.na(v) & (v %in% names(IDIOMA_EN) | grepl("^(Eje|Plano) \\d", v))
+  v[fijo] <- traducir(v[fijo], "en")
+  v
+}
+
+# Gráfico ggplot con título, ejes y leyendas traducidos
+traducir_grafico <- function(g, idioma = idioma_actual()) {
+  if (!identical(idioma, "en") || !inherits(g, "ggplot")) return(g)
+  textos <- Filter(is.character, as.list(g$labels))
+  if (!length(textos)) return(g)
+  g + do.call(ggplot2::labs, lapply(textos, traducir, idioma = idioma))
+}
+
+# Excel con hojas y columnas en el idioma elegido
+guardar_xlsx <- function(hojas, archivo, idioma = idioma_actual()) {
+  if (identical(idioma, "en")) {
+    hojas <- lapply(hojas, traducir_tabla, idioma = idioma)
+    names(hojas) <- traducir(names(hojas), idioma)
+  }
+  writexl::write_xlsx(hojas, archivo)
+}
+
+# Separador decimal de las tablas en pantalla
+marca_decimal <- function(idioma = idioma_actual()) if (identical(idioma, "en")) "." else ","
+
+# Selector de la barra superior
+selector_idioma <- function(id = "idioma") {
+  shiny::div(class = "bl-idioma",
+             shiny::radioButtons(id, NULL, choices = c("ES" = "es", "EN" = "en"),
+                                 selected = "es", inline = TRUE))
+}
+
+# Tablas de renderTable: números ya escritos con el separador del idioma
+# (format.args de renderTable se fija una sola vez y no sigue al selector)
+con_decimales <- function(df, digitos = 3, idioma = idioma_actual()) {
+  for (j in seq_along(df)) if (is.double(df[[j]])) {
+    df[[j]] <- formatC(df[[j]], format = "f", digits = digitos, decimal.mark = marca_decimal(idioma))
+  }
+  df
+}

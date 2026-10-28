@@ -342,7 +342,7 @@ render_biplot <- function(grafico, session, salida = "biplot", alto = ALTO_VENTA
     W <- session$clientData[[paste0("output_", session$ns(salida), "_width")]] %||% 900
     encuadre_biplot(grafico(), W = W, H = alto)
   })
-  shiny::renderPlot(suppressWarnings(print(grafico())),
+  shiny::renderPlot(suppressWarnings(print(traducir_grafico(grafico()))),
                     width = function() max(200, floor(tam()$ancho)),
                     height = function() max(200, floor(tam()$alto)), res = 96)
 }
@@ -352,7 +352,7 @@ descarga_biplot <- function(grafico, nombre, ext, ..., W = 10, H = 8) {
     filename = nombre,
     content = function(file) {
       e <- encuadre_biplot(grafico(), W = W, H = H, unidad = "in")
-      suppressWarnings(ggplot2::ggsave(file, grafico(), width = e$ancho, height = e$alto,
+      suppressWarnings(ggplot2::ggsave(file, traducir_grafico(grafico()), width = e$ancho, height = e$alto,
                                        units = "in", ...))
     })
 }

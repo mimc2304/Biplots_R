@@ -1,5 +1,5 @@
 # =============================================================================
-# MÓDULO: HJ-Biplot (Galindo, 1986)
+# MÓDULO: HJ-Biplot (Galindo-Villardón, 1986)
 #
 # Este archivo sirve también de MODELO para los demás módulos: tiene las tres
 # piezas que pide el registro (opciones_ui, resultados_ui y server).
@@ -30,7 +30,7 @@ N_BLOQUES <- 3
 mod_hj_opciones_ui <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
-    encabezado_opciones("HJ-Biplot", "Galindo (1986) - Gabriel (1971)"),
+    encabezado_opciones("HJ-Biplot", "Galindo-Villardón (1986) - Gabriel (1971)"),
 
     seccion_opciones(
       "Variables",
@@ -195,7 +195,7 @@ mod_hj_resultados_ui <- function(id) {
           shiny::uiOutput(ns("nota_columnas")),
           DT::DTOutput(ns("tabla_c"))
         ),
-        shiny::tabPanel(shiny::span(shiny::icon("book-open"), "Teoría"), teoria_ui("hj")),
+        shiny::tabPanel(shiny::span(shiny::icon("book-open"), "Fundamentos"), teoria_ui("hj")),
         shiny::tabPanel(
           shiny::span(shiny::icon("code"), "Sintaxis R"),
           shiny::p(class = "bl-muted",
@@ -461,17 +461,16 @@ mod_hj_server <- function(id, datos, compartido = NULL) {
     output$inercia <- shiny::renderTable({
       t <- tablas()$inercia
       t$Eje <- as.integer(t$Eje)
-      t
-    }, digits = 3, striped = TRUE, hover = TRUE, spacing = "s", align = "r",
-    format.args = list(decimal.mark = ","))
+      con_decimales(traducir_tabla(t))
+    }, striped = TRUE, hover = TRUE, spacing = "s", align = "r")
 
     output$sedimentacion <- shiny::renderPlot({
       inr <- res_ok()$inercia
       ggplot2::ggplot(inr, ggplot2::aes(factor(.data$Eje), .data$`% Inercia`)) +
         ggplot2::geom_col(fill = COLOR_FILAS, width = 0.6) +
-        ggplot2::geom_text(ggplot2::aes(label = format(round(.data$`% Inercia`, 1), decimal.mark = ",")),
+        ggplot2::geom_text(ggplot2::aes(label = format(round(.data$`% Inercia`, 1), decimal.mark = marca_decimal())),
                            vjust = -0.4, size = 3.2, colour = "#52514e") +
-        ggplot2::labs(x = "Eje", y = "% de inercia") +
+        ggplot2::labs(x = traducir("Eje"), y = traducir("% de inercia")) +
         ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0, 0.12))) +
         ggplot2::theme_minimal(base_size = 11) +
         ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
@@ -571,7 +570,7 @@ mod_hj_server <- function(id, datos, compartido = NULL) {
       filename = function() sprintf("resultados_%s-biplot.xlsx", tolower(res_ok()$tipo)),
       content = function(file) {
         t <- tablas()
-        writexl::write_xlsx(list(
+        guardar_xlsx(list(
           "Inercia"                = t$inercia,
           "Coordenadas individuos" = t$coordenadas_filas,
           "Coordenadas variables"  = t$coordenadas_columnas,

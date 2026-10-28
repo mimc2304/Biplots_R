@@ -568,7 +568,7 @@ invertir_ejes <- function(x, ejes) {
 #' @noRd
 #' @export
 print.bigarx_canonical <- function(x, ...) {
-  cat("Biplot can\u00F3nico / MANOVA biplot (Amaro, Vicente-Villard\u00F3n y Galindo, 2004)\n")
+  cat("Biplot can\u00F3nico / MANOVA biplot (Amaro, Vicente-Villard\u00F3n y Galindo-Villardón, 2004)\n")
   cat(sprintf("%d grupos | %d variables | %d individuos | transformaci\u00F3n: %s\n",
               nrow(x$rows), nrow(x$cols), nrow(x$individuals), x$preprocessing$transform))
   m <- x$manova

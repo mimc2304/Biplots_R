@@ -130,7 +130,8 @@ app_ui <- function(request) {
         shiny::tags$header(
           class = "bl-top",
           shiny::div(class = "bl-brand", shiny::icon("compass-drafting"), shiny::span("BiplotLab")),
-          shiny::span(class = "bl-top-sub", "Análisis multivariante con métodos Biplot")
+          shiny::span(class = "bl-top-sub", "Análisis multivariante con métodos Biplot"),
+          selector_idioma()
         ),
         shiny::div(
           class = "bl-ribbon",
@@ -179,6 +180,8 @@ pantalla_bienvenida <- function(analisis) {
 
 app_server <- function(input, output, session) {
   analisis <- Filter(function(a) isTRUE(a$listo), registro_analisis())
+  # Idioma de los resultados (selector ES | EN de la barra superior, ver idioma.R)
+  session$userData$idioma <- shiny::reactive(input$idioma %||% "es")
 
   # ---------------------------------------------------------------- Datos ----
   # La app empieza sin datos: el usuario carga su archivo

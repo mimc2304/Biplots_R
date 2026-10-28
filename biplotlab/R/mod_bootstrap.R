@@ -76,7 +76,7 @@ mod_bootstrap_resultados_ui <- function(id) {
                      shiny::plotOutput(ns("hist"), height = "320px"),
                      shiny::plotOutput(ns("qq"), height = "320px"))
         ),
-        shiny::tabPanel(shiny::span(shiny::icon("book-open"), "Teoría"), teoria_ui("bootstrap")),
+        shiny::tabPanel(shiny::span(shiny::icon("book-open"), "Fundamentos"), teoria_ui("bootstrap")),
         shiny::tabPanel(
           shiny::span(shiny::icon("code"), "Sintaxis R"),
           shiny::div(class = "bl-code", shiny::verbatimTextOutput(ns("sintaxis"))),
@@ -195,11 +195,11 @@ mod_bootstrap_server <- function(id, datos, compartido = NULL) {
 
     output$hist <- shiny::renderPlot({
       shiny::req(input$estadistico %in% colnames(bt()$replicas))
-      grafico_bootstrap_hist(bt(), input$estadistico)
+      traducir_grafico(grafico_bootstrap_hist(bt(), input$estadistico))
     }, res = 96)
     output$qq <- shiny::renderPlot({
       shiny::req(input$estadistico %in% colnames(bt()$replicas))
-      grafico_bootstrap_qq(bt(), input$estadistico)
+      traducir_grafico(grafico_bootstrap_qq(bt(), input$estadistico))
     }, res = 96)
 
     sintaxis <- shiny::reactive({
@@ -234,7 +234,7 @@ mod_bootstrap_server <- function(id, datos, compartido = NULL) {
       filename = function() "bootstrap_biplot.xlsx",
       content = function(file) {
         x <- bt()
-        writexl::write_xlsx(list("Intervalos" = x$resumen,
+        guardar_xlsx(list("Intervalos" = x$resumen,
                                  "Replicas" = as.data.frame(x$replicas, check.names = FALSE)), file)
       })
 

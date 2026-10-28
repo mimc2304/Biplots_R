@@ -57,15 +57,22 @@ caja_error <- function(mensaje) {
 #' @param filas filas por página.
 #' @export
 tabla_resultados <- function(df, decimales = 3, filas = 15) {
+  idioma <- idioma_actual()
+  df <- traducir_tabla(df, idioma)
   num <- names(df)[vapply(df, is.numeric, logical(1))]
+  textos <- if (identical(idioma, "en")) list(search = "Search:", info = "_START_ to _END_ of _TOTAL_",
+                                              paginate = list(previous = "Previous", `next` = "Next"),
+                                              zeroRecords = "No matches", infoEmpty = "No data",
+                                              infoFiltered = "(of _MAX_)")
+    else list(search = "Buscar:", info = "_START_ a _END_ de _TOTAL_",
+              paginate = list(previous = "Anterior", `next` = "Siguiente"),
+              zeroRecords = "Sin coincidencias", infoEmpty = "Sin datos",
+              infoFiltered = "(de _MAX_)")
   dt <- DT::datatable(
     df, rownames = FALSE, class = "compact stripe hover",
     extensions = character(),
     options = list(pageLength = filas, scrollX = TRUE, dom = if (nrow(df) > filas) "ftip" else "t",
-                   language = list(search = "Buscar:", info = "_START_ a _END_ de _TOTAL_",
-                                   paginate = list(previous = "Anterior", `next` = "Siguiente"),
-                                   zeroRecords = "Sin coincidencias", infoEmpty = "Sin datos",
-                                   infoFiltered = "(de _MAX_)")))
-  if (length(num)) dt <- DT::formatRound(dt, num, digits = decimales, mark = "", dec.mark = ",")
+                   language = textos))
+  if (length(num)) dt <- DT::formatRound(dt, num, digits = decimales, mark = "", dec.mark = marca_decimal(idioma))
   dt
 }

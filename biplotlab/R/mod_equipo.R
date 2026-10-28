@@ -203,7 +203,7 @@ mod_equipo_resultados_ui <- function(id, method) {
         shiny::column(8, shiny::h5("Estadísticos por variable"), DT::DTOutput(ns("lstats"))),
         shiny::column(4, shiny::h5("Clasificación global"), shiny::verbatimTextOutput(ns("lglob")),
                       shiny::plotOutput(ns("conv"), height = "260px")))),
-    shiny::tabPanel(shiny::span(shiny::icon("book-open"), "Teoría"), teoria_ui(method)),
+    shiny::tabPanel(shiny::span(shiny::icon("book-open"), "Fundamentos"), teoria_ui(method)),
     shiny::tabPanel(shiny::span(shiny::icon("code"), "Sintaxis R"), shiny::verbatimTextOutput(ns("sintaxis")))
   )
   tabs <- Filter(Negate(is.null), tabs)
@@ -399,8 +399,9 @@ mod_equipo_server <- function(id, method, datos) {
     output$dl_pdf <- descarga_biplot(the_plot, paste0(method, "_biplot.pdf"), "pdf")
 
     dt_table <- function(df, zero_cols = NULL, page = 10) {
-      d <- DT::datatable(df, rownames = FALSE, class = "compact stripe hover",
+      d <- DT::datatable(traducir_tabla(df), rownames = FALSE, class = "compact stripe hover",
                          options = list(scrollX = TRUE, pageLength = page, dom = "frtip"))
+      if (!is.null(zero_cols) && length(zero_cols)) zero_cols <- traducir(zero_cols)
       if (!is.null(zero_cols) && length(zero_cols))
         d <- DT::formatStyle(d, zero_cols, color = DT::styleEqual(0, "#c0c7cc"))
       d
@@ -512,7 +513,7 @@ mod_equipo_server <- function(id, method, datos) {
         if (method == "logistic") L$Ajuste <- lst()
         if (method == "disjoint") { L$Clusters <- cluster_table(Xm(), fit()); L$Pertenencia <- data.frame(Individuo = rownames(Xm()), Cluster = as.character(fit()$u)) }
         if (method == "logistic" && ext() && isTRUE(input$ncl >= 2)) L$Clusters <- elb_cluster(fit(), input$ncl)$tabla
-        writexl::write_xlsx(L, f)
+        guardar_xlsx(L, f)
       })
 
     # --- Sintaxis R ---------------------------------------------------------------

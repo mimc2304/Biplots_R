@@ -221,7 +221,7 @@ mod_gge_resultados_ui <- function(id) {
           shiny::uiOutput(ns("nota_columnas")),
           DT::DTOutput(ns("tabla_c"))
         ),
-        shiny::tabPanel(shiny::span(shiny::icon("book-open"), "Teoría"), teoria_ui("gge")),
+        shiny::tabPanel(shiny::span(shiny::icon("book-open"), "Fundamentos"), teoria_ui("gge")),
         shiny::tabPanel(
           shiny::span(shiny::icon("code"), "Sintaxis R"),
           shiny::p(class = "bl-muted",
@@ -478,17 +478,16 @@ mod_gge_server <- function(id, datos, compartido = NULL) {
     output$inercia <- shiny::renderTable({
       t <- tablas()$inercia
       t$Eje <- as.integer(t$Eje)
-      t
-    }, digits = 3, striped = TRUE, hover = TRUE, spacing = "s", align = "r",
-    format.args = list(decimal.mark = ","))
+      con_decimales(traducir_tabla(t))
+    }, striped = TRUE, hover = TRUE, spacing = "s", align = "r")
 
     output$sedimentacion <- shiny::renderPlot({
       inr <- tablas()$inercia
       ggplot2::ggplot(inr, ggplot2::aes(factor(.data$Eje), .data$`% Inercia`)) +
         ggplot2::geom_col(fill = COLOR_FILAS, width = 0.6) +
-        ggplot2::geom_text(ggplot2::aes(label = format(round(.data$`% Inercia`, 1), decimal.mark = ",")),
+        ggplot2::geom_text(ggplot2::aes(label = format(round(.data$`% Inercia`, 1), decimal.mark = marca_decimal())),
                            vjust = -0.4, size = 3.2, colour = "#52514e") +
-        ggplot2::labs(x = "Eje", y = "% de inercia") +
+        ggplot2::labs(x = traducir("Eje"), y = traducir("% de inercia")) +
         ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0, 0.12))) +
         ggplot2::theme_minimal(base_size = 11) +
         ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
@@ -608,7 +607,7 @@ mod_gge_server <- function(id, datos, compartido = NULL) {
         nombre <- substr(names(gge_menu_herramientas(nombre_filas(), nombre_columnas()))[GGE_HERRAMIENTAS == herramienta()], 1, 31)
         if (!is.null(v$tabla)) hojas[[nombre]] <- v$tabla
         if (!is.null(v$tabla2)) hojas[[substr(paste(nombre, "(2)"), 1, 31)]] <- v$tabla2
-        writexl::write_xlsx(hojas, file)
+        guardar_xlsx(hojas, file)
       }
     )
 

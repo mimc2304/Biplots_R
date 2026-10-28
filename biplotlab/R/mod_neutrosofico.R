@@ -164,7 +164,7 @@ mod_neutro_opciones_ui <- function(id) {
   ns <- shiny::NS(id)
   ayuda <- function(...) shiny::p(class = "bl-help", ...)
   shiny::tagList(
-    encabezado_opciones("HJ Neutrosófico", "Puntuación S = T - I - F y HJ-Biplot (Galindo, 1986)"),
+    encabezado_opciones("HJ Neutrosófico", "Puntuación S = T - I - F y HJ-Biplot (Galindo-Villardón, 1986)"),
     seccion_opciones(
       "Datos de entrada",
       shiny::radioButtons(ns("formato"), "¿Cómo vienen T, I y F?",
@@ -229,7 +229,7 @@ mod_neutro_resultados_ui <- function(id) {
                       DT::DTOutput(ns("vars"))),
       shiny::tabPanel("Recodificación", ayuda("Cuántas respuestas quedaron como T, I, F o neutral, y cuántas filas se excluyeron."),
                       shiny::uiOutput(ns("filas")), DT::DTOutput(ns("resumen"))),
-      shiny::tabPanel(shiny::span(shiny::icon("book-open"), "Teoría"), teoria_ui("neutro")),
+      shiny::tabPanel(shiny::span(shiny::icon("book-open"), "Fundamentos"), teoria_ui("neutro")),
       shiny::tabPanel(shiny::span(shiny::icon("code"), "Sintaxis R"), shiny::verbatimTextOutput(ns("sintaxis")))
     ))
   )
@@ -362,7 +362,7 @@ mod_neutro_server <- function(id, datos) {
     })
     output$dl_xlsx <- shiny::downloadHandler(
       filename = "hj_neutrosofico_tablas.xlsx",
-      content = function(f) writexl::write_xlsx(list(Inercia = tablas()$inercia, Observaciones = tablas()$obs,
+      content = function(f) guardar_xlsx(list(Inercia = tablas()$inercia, Observaciones = tablas()$obs,
                                                      Variables = tablas()$vars, Recodificacion = tablas()$resumen), f))
 
     output$sintaxis <- shiny::renderText({

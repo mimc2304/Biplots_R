@@ -1,5 +1,5 @@
 # =============================================================================
-# Cálculo del HJ-Biplot (Galindo, 1986) y de los biplots clásicos GH y JK
+# Cálculo del HJ-Biplot (Galindo-Villardón, 1986) y de los biplots clásicos GH y JK
 # (Gabriel, 1971).
 #
 # Notación (igual que en el material de clase):
@@ -76,7 +76,7 @@ transformar_matriz <- function(X, transformacion = "estandarizar", log = FALSE) 
 #'   `"estandarizar"` (estandarización por columnas, como en MULTBIPLOT).
 #' @param log aplicar logaritmo antes de transformar.
 #' @param dimensiones número de ejes a conservar en los resultados.
-#' @param tipo `"HJ"` (Galindo, 1986), `"GH"` o `"JK"` (Gabriel, 1971).
+#' @param tipo `"HJ"` (Galindo-Villardón, 1986), `"GH"` o `"JK"` (Gabriel, 1971).
 #' @param referencia convenio de signos: nombre de una variable activa que debe
 #'   quedar en el lado positivo de todos los ejes. Con `NULL` se deja el signo
 #'   que da la SVD (el mismo convenio que MultBiplotR).
