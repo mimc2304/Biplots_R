@@ -455,7 +455,7 @@ TEORIA <- list(
       lectura = "Genotipos como puntos y ambientes como vectores: la proyección de un punto sobre un vector aproxima el desempeño del genotipo en ese ambiente."),
     para_que = c(
       "El GGE-Biplot es una técnica gráfica para analizar tablas de doble entrada, en particular los ensayos multiambiente, en los que varios genotipos se evalúan en distintos ambientes. En estos ensayos el efecto principal del ambiente (<b>E</b>) suele explicar la mayor parte de la variación, pero no ayuda a seleccionar, porque afecta por igual a todos los genotipos. Por eso el método lo elimina y representa de forma conjunta el efecto principal del genotipo (<b>G</b>) y la interacción genotipo × ambiente (<b>GE</b>), las dos fuentes de variación relevantes para evaluar genotipos.",
-      "Con esa representación se puede identificar qué genotipo sobresale en cada ambiente y si existen mega-ambientes, evaluar a la vez el rendimiento medio y la estabilidad de los genotipos, y valorar los ambientes por su capacidad de discriminación y su representatividad. Aunque nació en el mejoramiento vegetal, se aplica a cualquier tabla individuo × contexto, por ejemplo universidades × años o regiones × indicadores."),
+      "Con esa representación se puede identificar qué genotipo sobresale en cada ambiente y si existen mega-ambientes, evaluar a la vez el rendimiento medio y la estabilidad de los genotipos, y valorar los ambientes por su capacidad de discriminación y su representatividad (Yan y Tinker, 2006). Aunque nació en el mejoramiento vegetal, se aplica a cualquier tabla individuo × contexto, por ejemplo universidades × años o regiones × indicadores."),
     entrada = c(
       "Una tabla de doble entrada con los genotipos (individuos) en las filas y los ambientes (variables) en las columnas. La primera columna del archivo contiene los nombres de las filas, que deben ser únicos."),
     no_usar = c(
@@ -464,7 +464,7 @@ TEORIA <- list(
       "<b>1. Centrado.</b> Determina qué parte de la variación se representa. <b>Por columna (G + GE)</b>, el modelo GGE: a cada valor se le resta la media de su ambiente, con lo que se elimina el efecto principal del ambiente. <b>Sin centrar</b>: se analizan los datos originales. <b>Global (E + G + GE)</b>: se resta la media general y se conserva el efecto del ambiente. <b>Doble (GE)</b>: se restan las medias de fila y de columna, y queda solo la interacción.",
       "<b>2. Escalado</b> (opcional). Cada columna se divide por su desviación estándar, de modo que todos los ambientes tengan la misma varianza y el mismo peso en el análisis.",
       "<b>3. Descomposición en valores singulares (SVD).</b> La tabla se descompone en ejes ordenados según la proporción de variación que explican. Los dos ejes elegidos forman el plano del biplot, y su porcentaje de inercia acumulado indica qué parte de la variación queda representada.",
-      "<b>4. Partición de los valores singulares.</b> Los valores singulares se reparten entre los marcadores de filas y de columnas. <b>GH</b> los asigna a los ambientes y conserva sus relaciones (adecuada para comparar ambientes); <b>JK</b> los asigna a los genotipos y conserva las distancias entre ellos (adecuada para comparar genotipos); <b>SQ</b> los reparte por igual; <b>HJ</b> los asigna a ambos y da la máxima calidad de representación a filas y columnas a la vez.",
+      "<b>4. Partición de los valores singulares.</b> Los valores singulares se reparten entre los marcadores de filas y de columnas. <b>GH</b> los asigna a los ambientes y conserva sus relaciones (adecuada para comparar ambientes); <b>JK</b> los asigna a los genotipos y conserva las distancias entre ellos (adecuada para comparar genotipos); <b>SQ</b> los reparte por igual (Gabriel, 1971);<b>HJ</b> los asigna a ambos y da la máxima calidad de representación a filas y columnas a la vez (Galindo-Villardón, 1986).",
       "<b>5. Resultados.</b> Inercia de cada eje, coordenadas, calidad de representación (CRFE) y contribución (CREF) de filas y columnas, además de la tabla propia de cada herramienta."),
     lectura = c(
       "<b>Biplot</b>: Representa simultáneamente los genotipos (puntos) y los ambientes (vectores). Las barras de calidad mínima permiten ocultar los elementos con menor calidad de representación en el plano.",
@@ -481,12 +481,13 @@ TEORIA <- list(
       "<code>R/calculo_gge.R</code>: centrado, escalado, partición y los diez gráficos.",
       "<code>R/tablas_gge.R</code>: las tablas de resultados y de cada herramienta.",
       "<code>R/mod_gge.R</code>: la pantalla, la Sintaxis R y las descargas.",
-      "Resultados validados con los datos de Ontario frente a GGEBiplotGUI y <code>metan::gge()</code> (<code>tests/testthat/test-gge.R</code>)."),
+      "Resultados validados con los datos de Ontario frente a GGEBiplotGUI (Frutos et al., 2014)."),
     referencias = list(
       modulo = c(
-        "Frutos, E., Galindo, M. P. y Leiva, V. (2014). An interactive biplot implementation in R for modeling genotype-by-environment interaction. <i>Stochastic Environmental Research and Risk Assessment, 28</i>(7), 1629-1641. https://doi.org/10.1007/s00477-013-0821-z"),
+        "Frutos, E., Galindo-Villardón, P. y Leiva, V. (2014). An interactive biplot implementation in R for modeling genotype-by-environment interaction. <i>Stochastic Environmental Research and Risk Assessment, 28</i>(7), 1629-1641. https://doi.org/10.1007/s00477-013-0821-z"),
       original = c(
+        "Gabriel, K. R. (1971). The biplot graphic display of matrices with application to principal component analysis. <i>Biometrika, 58</i>(3), 453-467. https://doi.org/10.1093/biomet/58.3.453",
+        "Galindo-Villardón, P. (1986). Una alternativa de representación simultánea: HJ-Biplot. <i>Qüestiió, 10</i>(1), 13-23. http://hdl.handle.net/2099/4523",
         "Yan, W., Hunt, L. A., Sheng, Q. y Szlavnics, Z. (2000). Cultivar evaluation and mega-environment investigation based on the GGE biplot. <i>Crop Science, 40</i>(3), 597-605. https://doi.org/10.2135/cropsci2000.403597x",
-        "Yan, W. y Kang, M. S. (2003). <i>GGE biplot analysis: A graphical tool for breeders, geneticists, and agronomists</i>. CRC Press.",
         "Yan, W. y Tinker, N. A. (2006). Biplot analysis of multi-environment trial data: Principles and applications. <i>Canadian Journal of Plant Science, 86</i>(3), 623-645. https://doi.org/10.4141/P05-169")))
 )

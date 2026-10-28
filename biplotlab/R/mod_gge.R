@@ -2,7 +2,7 @@
 # MÓDULO: GGE-Biplot (Yan et al., 2000; Yan y Tinker, 2006)
 #
 # Pantalla del GGE-Biplot. El cálculo vive en R/calculo_gge.R para poder usarlo
-# sin la app (y para copiarlo en la "Sintaxis R" autónoma).
+# sin la app (la "Sintaxis R" las llama desde library(biplotlab)).
 # Partes, como en la plantilla: B) registro, C) opciones, D) resultados, E) lógica.
 #
 # Al integrarlo en el aplicativo (12/10) se agregó, como en el resto de biplots:
@@ -511,7 +511,7 @@ mod_gge_server <- function(id, datos, compartido = NULL) {
     output$tabla_c <- DT::renderDT(tabla_resultados(tablas()[[input$tabla_columnas]],
                                                     decimales(input$tabla_columnas), 25))
 
-    # --- Sintaxis R autónoma -------------------------------------------------------
+    # --- Sintaxis R ----------------------------------------------------------------
     sintaxis <- shiny::reactive({
       r <- res_ok()
       cadena <- function(x) encodeString(x, quote = "\"")
@@ -523,6 +523,7 @@ mod_gge_server <- function(id, datos, compartido = NULL) {
         if (og$tam_puntos != 1.5) sprintf("tam_puntos = %s", og$tam_puntos))
       ej <- paste(c(sprintf("ejes = c(%d, %d)", ejes()[1], ejes()[2]), extras), collapse = ", ")
       h <- herramienta()
+      volteados <- c(if (isTRUE(input$voltear_h)) ejes()[1], if (isTRUE(input$voltear_v)) ejes()[2])
       mostrar <- input$mostrar %||% "ambos"
       cal_f <- if (h == "biplot" && mostrar != "columnas") input$cal_filas %||% 0 else 0
       cal_c <- if (h == "biplot" && mostrar != "filas") input$cal_columnas %||% 0 else 0
@@ -557,29 +558,27 @@ mod_gge_server <- function(id, datos, compartido = NULL) {
       lineas <- c(
         sprintf("# GGE-Biplot: %s",
                 names(gge_menu_herramientas(nombre_filas(), nombre_columnas()))[GGE_HERRAMIENTAS == h]),
-        "# Requiere ggplot2 y ggrepel: install.packages(c(\"ggplot2\", \"ggrepel\"))",
+        sintaxis_paquete(),
         "",
-        "# ---- Funciones del módulo GGE ----",
-        sintaxis_funciones_gge(),
-        "",
-        "# ---- Datos ----",
-        sintaxis_lectura_autonoma(datos()$origen),
+        sintaxis_lectura(datos()$origen),
         if (length(input$excluir)) c(
           "",
           "# Individuos excluidos del análisis",
           sprintf("datos <- datos[!rownames(datos) %%in%% %s, ]", vector_a_r(input$excluir, 2))),
         "",
-        "# ---- Análisis ----",
         sprintf("variables <- %s", vector_a_r(input$variables, 13)),
         "tabla <- as.matrix(datos[, variables])",
         sprintf("desc <- gge_descomposicion(gge_escalado(gge_centrado(tabla, \"%s\"), \"%s\"), \"%s\")",
                 r$centrado, r$escalado, r$particion),
+        if (length(volteados)) c(
+          "# Ejes volteados (no cambia ningún producto escalar)",
+          sprintf("desc$filas[, %s] <- -desc$filas[, %s]", vector_a_r(volteados), vector_a_r(volteados)),
+          sprintf("desc$columnas[, %s] <- -desc$columnas[, %s]", vector_a_r(volteados), vector_a_r(volteados))),
         sprintf("resultados <- gge_resultados(desc, eje = c(%d, %d))", ejes()[1], ejes()[2]),
-        "resultados$inercia",
-        "round(resultados$calidad_filas)          # CRFE (por mil)",
-        "round(resultados$calidad_columnas)",
+        "resultados$inercia                       # valores propios e inercia",
+        "round(resultados$calidad_filas)          # CRFE de los individuos (por mil)",
+        "round(resultados$calidad_columnas)       # CRFE de las variables (por mil)",
         "",
-        "# ---- Gráfico ----",
         llamada,
         "grafico"
       )
@@ -714,57 +713,4 @@ gge_grafico_herramienta <- function(res, herramienta, ejes = c(1, 2), ambiente =
     ggplot2::theme(plot.title = ggplot2::element_text(size = 12, face = "bold"),
                    plot.subtitle = ggplot2::element_text(colour = "#6b6a65", size = 10),
                    plot.background = ggplot2::element_rect(fill = "white", colour = NA))
-}
-
-# Código de calculo_gge.R para la Sintaxis R autónoma
-sintaxis_funciones_gge <- function() {
-  constantes <- c("GGE_CENTRADOS", "GGE_ESCALADOS", "GGE_PARTICIONES")
-  funciones <- c("gge_recta", "gge_centrado", "gge_escalado", "gge_descomposicion", "gge_resultados",
-                 "gge_coordenadas_grafico", "gge_biplot_basico", "gge_examinar_ambiente",
-                 "gge_examinar_genotipo", "gge_relacion_ambientes", "gge_comparar_genotipos",
-                 "gge_quien_gano_donde", "gge_dis_rep", "gge_media_estabilidad",
-                 "gge_ranking_ambientes", "gge_ranking_genotipos")
-  bloque <- function(nombre, objeto) {
-    paste0(nombre, " <- ", paste(deparse(objeto, control = "useSource"), collapse = "\n"))
-  }
-  c(vapply(constantes, function(x) bloque(x, get(x)), character(1)), "",
-    paste(vapply(funciones, function(f) bloque(f, get(f, mode = "function")), character(1)),
-          collapse = "\n\n"))
-}
-
-# Lectura de los datos sin funciones de BiplotLab
-sintaxis_lectura_autonoma <- function(origen) {
-  if (identical(origen$tipo, "ejemplo")) {
-    return(c("# Datos de ejemplo de BiplotLab: descárgalos en CSV desde el panel Datos",
-             "datos <- read.csv(\"datos.csv\", check.names = FALSE)",
-             "datos <- as.data.frame(datos)",
-             "rownames(datos) <- datos[[1]]",
-             "datos <- datos[-1]"))
-  }
-  nombre <- origen$nombre
-  ext <- tolower(tools::file_ext(nombre))
-  lectura <- if (ext %in% c("xls", "xlsx")) {
-    if (!is.null(origen$hoja)) {
-      sprintf("datos <- readxl::read_excel(%s, sheet = %s)", encodeString(nombre, quote = "\""),
-              encodeString(origen$hoja, quote = "\""))
-    } else sprintf("datos <- readxl::read_excel(%s)", encodeString(nombre, quote = "\""))
-  } else if (ext %in% c("sav", "zsav", "por")) {
-    sprintf("datos <- haven::as_factor(haven::read_spss(%s))", encodeString(nombre, quote = "\""))
-  } else if (ext == "dta") {
-    sprintf("datos <- haven::as_factor(haven::read_dta(%s))", encodeString(nombre, quote = "\""))
-  } else if (ext == "parquet") {
-    sprintf("datos <- nanoparquet::read_parquet(%s)", encodeString(nombre, quote = "\""))
-  } else {
-    c("# Si tu archivo usa ; como separador o coma decimal, usa read.csv2()",
-      sprintf("datos <- read.csv(%s, check.names = FALSE)", encodeString(nombre, quote = "\"")))
-  }
-  c(if (isTRUE(origen$editado)) c(
-      "# Los datos se editaron en la aplicación: descárgalos con el botón CSV del panel",
-      "# Datos y cambia la ruta por la ubicación de ese archivo")
-    else "# Cambia la ruta por la ubicación del archivo en tu computador",
-    lectura,
-    "datos <- as.data.frame(datos)",
-    if (!isFALSE(origen$nombres_filas)) c(
-      "rownames(datos) <- as.character(datos[[1]])   # la primera columna tiene los nombres",
-      "datos <- datos[-1]"))
 }

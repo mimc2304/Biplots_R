@@ -235,7 +235,8 @@ gge_biplot_basico <- function(datos,ejes=c(1,2),ver_ambientes = NULL,ver_genotip
                              segment.colour = "grey70") +
     ggplot2::labs(x = titulo_x, y = titulo_y) +
     ggplot2::coord_equal() +
-    ggplot2::theme_minimal()
+    ggplot2::theme_minimal() +
+    ggplot2::theme(panel.grid = ggplot2::element_blank())
   
 }
 

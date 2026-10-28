@@ -14,6 +14,11 @@
 # ningún orden.
 # =============================================================================
 
+#' @rawNamespace export(gge_centrado, gge_escalado, gge_descomposicion, gge_resultados, gge_coordenadas_grafico, gge_biplot_basico)
+#' @rawNamespace export(gge_examinar_ambiente, gge_examinar_genotipo, gge_relacion_ambientes, gge_comparar_genotipos, gge_quien_gano_donde)
+#' @rawNamespace export(gge_dis_rep, gge_media_estabilidad, gge_ranking_ambientes, gge_ranking_genotipos)
+NULL
+
 # Códigos de las vistas (el menú con los nombres está en mod_gge.R)
 GGE_HERRAMIENTAS <- c("biplot", "examinar_ambiente", "examinar_genotipo", "relacion_ambientes",
                       "comparar_genotipos", "quien_gano_donde", "discriminacion",

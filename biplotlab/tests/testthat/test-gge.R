@@ -224,17 +224,17 @@ test_that("GGE: genotipo ideal con el criterio de la GUI", {
 
 # --- Sintaxis R --------------------------------------------------------------------
 
-test_that("GGE: la sintaxis R autónoma funciona sin BiplotLab", {
-  codigo <- c(sintaxis_funciones_gge(),
-              "datos <- read.csv(ruta, check.names = FALSE)",
-              "rownames(datos) <- as.character(datos[[1]]); datos <- datos[-1]",
-              "tabla <- as.matrix(datos)",
+test_that("GGE: la sintaxis R funciona con las funciones exportadas de BiplotLab", {
+  exportadas <- getNamespaceExports("biplotlab")
+  expect_true(all(c("gge_centrado", "gge_descomposicion", "gge_quien_gano_donde",
+                    "gge_ranking_genotipos") %in% exportadas))
+  codigo <- c("datos <- ejemplo_biplot(\"ontario\")",
+              "tabla <- as.matrix(datos[, vapply(datos, is.numeric, logical(1))])",
               "desc <- gge_descomposicion(gge_escalado(gge_centrado(tabla, 'tester'), 'no'), 'GH')",
               "resultados <- gge_resultados(desc, eje = c(1, 2))",
               "graficos <- list(gge_examinar_ambiente(desc, 'OA93'), gge_quien_gano_donde(desc),",
               "                 gge_dis_rep(desc), gge_ranking_genotipos(desc))")
-  entorno <- new.env(parent = globalenv())
-  entorno$ruta <- "../../inst/extdata/ontario.csv"
+  entorno <- new.env(parent = asNamespace("biplotlab"))
   suppressMessages(eval(parse(text = codigo), envir = entorno))
   expect_equal(round(entorno$desc$valor_singular[1], 3), 5.011)
   for (g in entorno$graficos) expect_s3_class(g, "ggplot")
