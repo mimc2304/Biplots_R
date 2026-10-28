@@ -50,3 +50,30 @@ test_that("el Excel en inglés usa hojas y columnas en inglés", {
 test_that("fuera de Shiny el idioma es español", {
   expect_equal(idioma_actual(), "es")
 })
+
+test_that("los valores de los datos no se traducen aunque coincidan con una etiqueta", {
+  df <- data.frame(Grupo = c("Media", "Grupo 1", "Valor"), Contraste = c("Wilks (aprox. χ² de Bartlett)", "Pillai", "sí"))
+  en <- traducir_tabla(df, "en")
+  expect_equal(names(en), c("Group", "Test"))
+  expect_equal(en$Group, c("Media", "Grupo 1", "Valor"))
+  expect_equal(en$Test, c("Wilks (Bartlett χ² approx.)", "Pillai", "yes"))
+})
+
+test_that("canónico y equipo: títulos y columnas en inglés", {
+  expect_equal(traducir(c("Regiones de confianza al 95 % (elipses de Krzanowski, escala W)",
+                          "r dentro, Eje 2", "Orientación eje mayor (°)", "DPCA (componentes disjuntos)"), "en"),
+               c("95 % confidence regions (Krzanowski ellipses, W scale)", "r within, Axis 2",
+                 "Major axis orientation (°)", "DPCA (disjoint components)"))
+  expect_equal(traducir(c("Eje1", "F por barrido (mejor arranque)"), "en"), c("Axis 1", "F per sweep (best start)"))
+  # una frase libre no se traduce a medias
+  expect_equal(traducir("Una frase con eje y plano", "en"), "Una frase con eje y plano")
+})
+
+test_that("tabla_apa del canónico se muestra en inglés", {
+  df <- data.frame(Contraste = "Wilks (aprox. χ² de Bartlett)", `gl num.` = 2, p = 0.01, check.names = FALSE)
+  shiny::withReactiveDomain(list(userData = list(idioma = function() "en")), {
+    html <- as.character(tabla_apa(df, "Lambda de Wilks con la aproximación χ² de Bartlett", rownames = FALSE))
+  })
+  expect_match(html, "lambda with Bartlett", fixed = TRUE)
+  expect_match(html, "num. df", fixed = TRUE)
+})

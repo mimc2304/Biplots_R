@@ -24,6 +24,7 @@ fmt_p <- function(p) {
 #' @export
 tabla_apa <- function(df, titulo, nota = NULL, digits = 3, formatos = NULL, rownames = TRUE,
                       nombre_filas = "") {
+  df <- traducir_tabla(df)
   if (is.null(formatos)) {
     formatos <- vapply(df, function(v) if (is.numeric(v)) {
       if (all(is.na(v) | v == round(v))) "int" else "num"
@@ -40,10 +41,10 @@ tabla_apa <- function(df, titulo, nota = NULL, digits = 3, formatos = NULL, rown
     if (rownames) celdas <- c(list(htmltools::tags$td(class = "txt rn", rownames(df)[i])), celdas)
     htmltools::tags$tr(celdas)
   })
-  cab <- lapply(traducir(names(df)), function(n) htmltools::tags$th(n))
+  cab <- lapply(names(df), function(n) htmltools::tags$th(n))
   if (rownames) cab <- c(list(htmltools::tags$th(nombre_filas)), cab)
   htmltools::tags$div(class = "res-tabla",
-    htmltools::tags$div(class = "res-titulo", titulo),
+    htmltools::tags$div(class = "res-titulo", traducir(titulo)),
     htmltools::tags$table(htmltools::tags$thead(htmltools::tags$tr(cab)),
                           htmltools::tags$tbody(cuerpo)),
     if (!is.null(nota)) htmltools::tags$div(class = "res-nota", htmltools::HTML(nota)))

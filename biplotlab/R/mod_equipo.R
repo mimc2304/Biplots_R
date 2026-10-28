@@ -239,6 +239,9 @@ encuadre_ggplot <- function(p) {
 # ------------------------------------------------------------------ Servidor --
 mod_equipo_server <- function(id, method, datos) {
   shiny::moduleServer(id, function(input, output, session) {
+    # renderPlot con títulos y ejes en el idioma elegido (ver idioma.R)
+    dibujar <- function(expr, ...) shiny::renderPlot(bquote(traducir_grafico(.(substitute(expr)))),
+                                                     quoted = TRUE, env = parent.frame(), ...)
     is_fact <- method != "logistic"
 
     # --- Variables y grupo a partir del panel Datos -------------------------
@@ -420,7 +423,7 @@ mod_equipo_server <- function(id, method, datos) {
       d <- tab_eig(); d[["Valor propio"]] <- round(d[["Valor propio"]], 4); d[3:4] <- round(d[3:4], 2)
       dt_table(d, page = 20)
     })
-    output$scree <- shiny::renderPlot(plot_scree(tab_eig()), res = 110)
+    output$scree <- dibujar(plot_scree(con_ejes_traducidos(tab_eig())), res = 110)
     zc <- shiny::reactive(if (method %in% c("dpca", "disjoint", "cenet")) grep("^Carga", names(tab_cols()), value = TRUE) else NULL)
     output$rows <- DT::renderDT(dt_table(tab_rows()))
     output$cols <- DT::renderDT(dt_table(tab_cols(), zero_cols = zc()))
@@ -438,7 +441,7 @@ mod_equipo_server <- function(id, method, datos) {
         cat(sprintf("Algoritmo: %s\nError relativo DPCA : %.4f  (varianza explicada %.2f%%)\nError relativo PCA  : %.4f  (cota inferior, sin restricción)\nPérdida por imponer la estructura disjunta: %.2f puntos porcentuales\n",
                     r$algo, r$F, 100 * (1 - r$F), r$F_pca, 100 * (r$F - r$F_pca)))
       })
-      output$conv <- shiny::renderPlot(plot_convergence(fit()$hist, "Error relativo F",
+      output$conv <- dibujar(plot_convergence(fit()$hist, "Error relativo F",
         if (fit()$algo == "pso") "Mejor F global por iteración (PSO)" else if (fit()$algo == "cdpca") "F por iteración ALS (mejor arranque)" else "F por barrido (mejor arranque)"), res = 110)
       if (method == "disjoint") {
         output$cltab <- DT::renderDT(dt_table(cluster_table(Xm(), fit()), page = 12))
@@ -453,7 +456,7 @@ mod_equipo_server <- function(id, method, datos) {
     # --- Cenet ----------------------------------------------------------------
     if (method == "cenet") {
       output$spars <- DT::renderDT(dt_table(sparsity_table(fit()), page = 20))
-      output$conv <- shiny::renderPlot({
+      output$conv <- dibujar({
         h <- fit()$conv
         d <- do.call(rbind, lapply(seq_along(h), function(q) data.frame(it = seq_along(h[[q]]) - 1, d = h[[q]], Eje = paste("Eje", q))))
         ggplot2::ggplot(d, ggplot2::aes(.data$it, .data$d, colour = .data$Eje)) + ggplot2::geom_line(linewidth = 0.9) +
@@ -478,9 +481,9 @@ mod_equipo_server <- function(id, method, datos) {
           ggplot2::scale_colour_manual(values = c("FALSE" = "#1f6f8b", "TRUE" = "#e07a1f"), guide = "none") +
           ggplot2::labs(x = xlab, y = ylab) + theme_biplot()
       }
-      output$bic_plot <- shiny::renderPlot(grafico_seleccion(shiny::req(bic()), "nivel", "BIC", "Nivel de sparsity (1 = sin restricción)", "BIC(τ)"), res = 110)
+      output$bic_plot <- dibujar(grafico_seleccion(shiny::req(bic()), "nivel", "BIC", "Nivel de sparsity (1 = sin restricción)", "BIC(τ)"), res = 110)
       output$bic_tab <- DT::renderDT({ b <- shiny::req(bic()); b$tau <- round(b$tau, 3); b$BIC <- round(b$BIC, 4); dt_table(b, page = 8) })
-      output$cv_plot <- shiny::renderPlot(grafico_seleccion(shiny::req(cvres()), "alpha", "MSE", "α", "MSE de reconstrucción (test)"), res = 110)
+      output$cv_plot <- dibujar(grafico_seleccion(shiny::req(cvres()), "alpha", "MSE", "α", "MSE de reconstrucción (test)"), res = 110)
       output$cv_tab <- DT::renderDT({ b <- shiny::req(cvres()); b$MSE <- round(b$MSE, 5); dt_table(b, page = 8) })
     }
 
@@ -495,7 +498,7 @@ mod_equipo_server <- function(id, method, datos) {
         else cat(sprintf("Correctamente clasificados: %.2f%%\nIteraciones: %d\nDevianza: %.2f\n\n", g$ccr, fit()$iterations, fit()$deviance))
         print(g$tabla)
       })
-      output$conv <- shiny::renderPlot(if (ext()) plot_scree(elb_eigen_table(fit())) else plot_convergence(fit()$dev_hist, "Devianza", "Convergencia (devianza)"), res = 110)
+      output$conv <- dibujar(if (ext()) plot_scree(con_ejes_traducidos(elb_eigen_table(fit()))) else plot_convergence(fit()$dev_hist, "Devianza", "Convergencia (devianza)"), res = 110)
       output$cltab <- DT::renderDT({
         shiny::validate(shiny::need(ext() && isTRUE(input$ncl >= 2), "Indica un número de clusters >= 2 (método externo)."))
         dt_table(elb_cluster(fit(), input$ncl)$tabla, page = 12)
