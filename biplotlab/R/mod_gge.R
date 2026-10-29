@@ -123,29 +123,39 @@ mod_gge_opciones_ui <- function(id) {
           shiny::column(6, shiny::selectInput(ns("genotipo2"), "Individuo 2", choices = NULL))
         )
       ),
-      shiny::conditionalPanel(
-        cuando("biplot"),
-        shiny::radioButtons(ns("mostrar"), "Mostrar",
-                            c("Ambos" = "ambos", "Solo individuos" = "filas", "Solo variables" = "columnas"),
-                            inline = TRUE),
-        shiny::p(class = "bl-help",
-                 "Calidad de representación (CRFE) en el plano del gráfico, de 0 a 1000 (500 = 50 %)."),
-        shiny::sliderInput(ns("cal_filas"), "Calidad mínima de los individuos", min = 0, max = 1000,
-                           value = 0, step = 50),
-        shiny::radioButtons(ns("mal_filas"), "Individuos que no llegan al mínimo",
-                            c("Ocultar" = "ocultar", "Atenuar (gris claro)" = "atenuar"), inline = TRUE),
-        shiny::sliderInput(ns("cal_columnas"), "Calidad mínima de las variables", min = 0, max = 1000,
-                           value = 0, step = 50),
-        shiny::radioButtons(ns("mal_columnas"), "Variables que no llegan al mínimo",
-                            c("Ocultar" = "ocultar", "Atenuar (gris claro)" = "atenuar"), inline = TRUE)
-      ),
       shiny::fluidRow(
         shiny::column(6, shiny::selectInput(ns("eje_x"), "Eje horizontal", 1:2, selected = 1)),
         shiny::column(6, shiny::selectInput(ns("eje_y"), "Eje vertical", 1:2, selected = 2))
       ),
       shiny::fluidRow(
-        shiny::column(6, shiny::checkboxInput(ns("voltear_h"), "Voltear de izquierda a derecha", FALSE)),
-        shiny::column(6, shiny::checkboxInput(ns("voltear_v"), "Voltear de arriba a abajo", FALSE))
+        shiny::column(6, shiny::checkboxInput(ns("voltear_h"), "Voltear izquierda-derecha", FALSE)),
+        shiny::column(6, shiny::checkboxInput(ns("voltear_v"), "Voltear arriba-abajo", FALSE))
+      ),
+      # Filtrar (solo en el Biplot): empieza cerrado; «Ocultar / Atenuar» aparece
+      # solo cuando la calidad mínima es mayor que 0
+      shiny::conditionalPanel(
+        cuando("biplot"),
+        seccion_opciones(
+          "Filtrar",
+          shiny::radioButtons(ns("mostrar"), "Mostrar",
+                              c("Ambos" = "ambos", "Solo individuos" = "filas", "Solo variables" = "columnas"),
+                              inline = TRUE),
+          shiny::p(class = "bl-help",
+                   "Calidad mínima (CRFE) en el plano del gráfico, de 0 a 1000 (500 = 50 %)."),
+          shiny::sliderInput(ns("cal_filas"), "Individuos", min = 0, max = 1000, value = 0, step = 50),
+          shiny::conditionalPanel(
+            sprintf("input['%s'] > 0", ns("cal_filas")),
+            shiny::radioButtons(ns("mal_filas"), "Los que no llegan",
+                                c("Ocultar" = "ocultar", "Atenuar (gris claro)" = "atenuar"), inline = TRUE)
+          ),
+          shiny::sliderInput(ns("cal_columnas"), "Variables", min = 0, max = 1000, value = 0, step = 50),
+          shiny::conditionalPanel(
+            sprintf("input['%s'] > 0", ns("cal_columnas")),
+            shiny::radioButtons(ns("mal_columnas"), "Las que no llegan",
+                                c("Ocultar" = "ocultar", "Atenuar (gris claro)" = "atenuar"), inline = TRUE)
+          ),
+          abierta = FALSE
+        )
       )
     ),
 
