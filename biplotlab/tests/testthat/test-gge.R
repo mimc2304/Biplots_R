@@ -241,6 +241,51 @@ test_that("GGE: la sintaxis R funciona con las funciones exportadas de BiplotLab
 })
 
 
+test_that("GGE: opciones de dibujo (nombres, negrita, resaltar, atenuar) sin cambiar el cálculo", {
+  res <- calcular_gge(ontario(), particion = "GH")
+  etiquetas <- function(g) unlist(lapply(capa(g, "GeomTextRepel"), `[[`, "label"))
+  colores <- function(g) unlist(lapply(c(capa(g, "GeomPoint"), capa(g, "GeomTextRepel")), `[[`, "colour"))
+  for (h in GGE_HERRAMIENTAS) {
+    args <- list(res, h, ambiente = "OA93", genotipo = "kat", genotipo1 = "fun", genotipo2 = "zav")
+    g <- do.call(gge_grafico_herramienta, c(args, nombres_filas = FALSE, nombres_columnas = FALSE))
+    expect_false(any(c(rownames(res$filas), colnames(res$tabla)) %in% etiquetas(g)))
+    g <- do.call(gge_grafico_herramienta, c(args, list(resaltar_genotipos = c("fun", "zav", "kat"),
+                                                       color_resaltar_genotipos = "#00ff00")))
+    # (relación entre ambientes y ranking de ambientes no dibujan individuos)
+    if (any(c("fun", "zav", "kat") %in% etiquetas(g))) expect_true("#00ff00" %in% colores(g))
+    g <- do.call(gge_grafico_herramienta, c(args, list(resaltar_ambientes = "OA93", color_resaltar_ambientes = "#00ff00")))
+    if ("OA93" %in% etiquetas(g)) expect_true("#00ff00" %in% colores(g))
+    # Color propio para los nombres de los individuos
+    g <- do.call(gge_grafico_herramienta, c(args, list(color_nombres_filas = "#123456")))
+    if (any(rownames(res$filas) %in% etiquetas(g))) expect_true("#123456" %in% colores(g))
+  }
+  g <- gge_grafico_herramienta(res, "biplot", negrita = FALSE)
+  expect_false(any(unlist(lapply(capa(g, "GeomTextRepel"), `[[`, "fontface")) %in% c(2, "bold")))
+  # Atenuar: se dibujan todos y los que no llegan al mínimo van en gris claro
+  q <- round(gge_resultados(res)$calidad_filas[, "Plano"])
+  g <- gge_grafico_herramienta(res, "biplot", cal_filas = 400, mal = "atenuar")
+  expect_true(all(names(q) %in% etiquetas(g)))
+  puntos <- capa(g, "GeomPoint")[[1]]
+  expect_equal(sum(puntos$colour == "grey80"), sum(q < 400))
+  # Por grupo: individuos atenuados y variables ocultas a la vez
+  qc <- round(gge_resultados(res)$calidad_columnas[, "Plano"])
+  g <- gge_grafico_herramienta(res, "biplot", cal_filas = 400, cal_columnas = 900,
+                               mal_filas = "atenuar", mal_columnas = "ocultar")
+  expect_true(all(names(q) %in% etiquetas(g)))
+  expect_equal(sum(colnames(res$tabla) %in% etiquetas(g)), sum(qc >= 900))
+  # Tamaños y separación propios de cada grupo
+  g <- gge_grafico_herramienta(res, "biplot", tam_texto_filas = 2, tam_texto_columnas = 5,
+                               distancia_etiquetas_filas = 0.1, distancia_etiquetas_columnas = 1.5)
+  textos <- capa(g, "GeomTextRepel")
+  expect_equal(sort(unique(unlist(lapply(textos, `[[`, "size")))), c(2, 5))
+  rep_capas <- Filter(function(l) inherits(l$geom, "GeomTextRepel"), g$layers)
+  expect_equal(unname(vapply(rep_capas, function(l) as.numeric(l$geom_params$box.padding), 1)), c(0.1, 1.5))
+  # Negrita en los individuos y grosor de las flechas
+  g <- gge_grafico_herramienta(res, "biplot", negrita_filas = TRUE, negrita = FALSE, grosor_flechas = 2)
+  expect_equal(unlist(lapply(capa(g, "GeomTextRepel"), function(d) unique(d$fontface))), c("bold", "plain"))
+  expect_true(2 %in% unlist(lapply(capa(g, "GeomSegment"), `[[`, "linewidth")))
+})
+
 test_that("GGE: el biplot oculta lo que no llega a la calidad mínima en el plano", {
   res <- calcular_gge(ontario(), particion = "GH")
   q <- round(gge_resultados(res)$calidad_filas[, "Plano"])

@@ -190,8 +190,16 @@ gge_coordenadas_grafico <- function(datos, ejes=c(1,2)){
   return(list(genotipos=genotipos, ambientes=ambientes))
 }
 
-#FUNCION 6: GRAFICO BÁSICO
-gge_biplot_basico <- function(datos,ejes=c(1,2),ver_ambientes = NULL,ver_genotipos=NULL,flechas=TRUE, color_filas = "#2a78d6", color_columnas = "#9a3412", tam_texto = 3, tam_puntos = 1.5){
+#FUNCION 6: GRÁFICO BÁSICO
+gge_biplot_basico <- function(datos, ejes = c(1,2), ver_ambientes = NULL, ver_genotipos = NULL, flechas = TRUE,
+                              color_filas = "#2a78d6", color_columnas = "#9a3412", tam_texto = 3, tam_puntos = 1.5,
+                              nombres_filas = TRUE, nombres_columnas = TRUE,
+                              color_nombres_filas = NULL, color_nombres_columnas = "black",
+                              negrita = TRUE, negrita_filas = FALSE, grosor_flechas = 0.5, distancia_etiquetas = 0.25,                              resaltar_genotipos = NULL, resaltar_ambientes = NULL, color_resaltar_genotipos = "#1a9850", color_resaltar_ambientes = "#1a9850",
+                              atenuar_genotipos = NULL, atenuar_ambientes = NULL,
+                              tam_texto_filas = tam_texto, tam_texto_columnas = tam_texto,
+                              tam_puntos_filas = tam_puntos, tam_puntos_columnas = tam_puntos,
+                              distancia_etiquetas_filas = distancia_etiquetas, distancia_etiquetas_columnas = distancia_etiquetas){
   
   coordenadas <- gge_coordenadas_grafico(datos, ejes)
   genotipos   <- coordenadas$genotipos
@@ -207,6 +215,18 @@ gge_biplot_basico <- function(datos,ejes=c(1,2),ver_ambientes = NULL,ver_genotip
     
   }
   
+  genotipos$color <- rep(color_filas, nrow(genotipos))
+  genotipos$color[genotipos$nombre %in% resaltar_genotipos] <- color_resaltar_genotipos
+  genotipos$color[genotipos$nombre %in% atenuar_genotipos] <- "grey80"
+  
+  ambientes$color <- rep(color_columnas, nrow(ambientes))
+  ambientes$color[ambientes$nombre %in% resaltar_ambientes] <- color_resaltar_ambientes
+  ambientes$color[ambientes$nombre %in% atenuar_ambientes] <- "grey80"
+  
+  genotipos$color_nombre <- genotipos$color
+  if (!is.null(color_nombres_filas)) genotipos$color_nombre[genotipos$color == color_filas] <- color_nombres_filas
+  ambientes$color_nombre <- ambientes$color
+  ambientes$color_nombre[ambientes$color == color_columnas] <- color_nombres_columnas
   
   porcentaje <- 100 * datos$valor_propio / sum(datos$valor_propio)
   titulo_x <- paste("Eje", ejes[1], round(porcentaje[ejes[1]], 2), "%")
@@ -216,31 +236,34 @@ gge_biplot_basico <- function(datos,ejes=c(1,2),ver_ambientes = NULL,ver_genotip
   ggplot2::ggplot() +
     ggplot2::geom_hline(yintercept = 0, linetype = "dotted", colour = "grey60") +
     ggplot2::geom_vline(xintercept = 0, linetype = "dotted", colour = "grey60") +
-    ggplot2::geom_point(data =genotipos, ggplot2::aes(x,y),colour = color_filas, size = tam_puntos) +
-    ggrepel::geom_text_repel(data = genotipos, ggplot2::aes(x, y, label = nombre),
-                             colour = color_filas, size = tam_texto,
-                             seed = 1,
-                             max.overlaps = Inf,
-                             segment.colour = "grey70") +
-    (if (flechas) ggplot2::geom_segment(data = ambientes,          # flechas de los ambientes (opcionales)
+    ggplot2::geom_point(data =genotipos, ggplot2::aes(x,y, colour = color), size = tam_puntos_filas) +
+    (if (nombres_filas) ggrepel::geom_text_repel(data = genotipos, ggplot2::aes(x, y, label = nombre, colour = color_nombre),
+                                                 size = tam_texto_filas,
+                                                 fontface = if (negrita_filas) "bold" else "plain",
+                                                 box.padding = distancia_etiquetas_filas,
+                                                 seed = 1,
+                                                 max.overlaps = Inf,
+                                                 segment.colour = "grey70")) +
+    (if (flechas) ggplot2::geom_segment(data = ambientes,
                                         ggplot2::aes(x = 0, y = 0,
-                                                     xend = x, yend = y),
-                                        colour = color_columnas,
+                                                     xend = x, yend = y, colour = color),
+                                        linewidth = grosor_flechas,
                                         arrow = grid::arrow(length = grid::unit(0.2, "cm")))) +
-    (if (!flechas) ggplot2::geom_point(data =ambientes, ggplot2::aes(x,y),colour = color_columnas, size = tam_puntos))+
-    ggrepel::geom_text_repel(data = ambientes, ggplot2::aes(x, y, label = nombre),
-                             colour = "black", size = tam_texto, fontface = "bold",
-                             seed = 1,
-                             max.overlaps = Inf,
-                             segment.colour = "grey70") +
+    (if (!flechas) ggplot2::geom_point(data =ambientes, ggplot2::aes(x,y, colour = color), size = tam_puntos_columnas))+
+    (if (nombres_columnas) ggrepel::geom_text_repel(data = ambientes, ggplot2::aes(x, y, label = nombre, colour = color_nombre),
+                                                    size = tam_texto_columnas,
+                                                    fontface = if (negrita) "bold" else "plain",
+                                                    box.padding = distancia_etiquetas_columnas,
+                                                    seed = 1,
+                                                    max.overlaps = Inf,
+                                                    segment.colour = "grey70")) +
+    ggplot2::scale_colour_identity() +
     ggplot2::labs(x = titulo_x, y = titulo_y) +
     ggplot2::coord_equal() +
     ggplot2::theme_minimal() +
     ggplot2::theme(panel.grid = ggplot2::element_blank())
   
 }
-
-
 
 #GRÁFICO 2: EXAMINAR POR AMBIENTES
 

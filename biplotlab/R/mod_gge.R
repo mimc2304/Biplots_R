@@ -129,16 +129,16 @@ mod_gge_opciones_ui <- function(id) {
                             c("Ambos" = "ambos", "Solo individuos" = "filas", "Solo variables" = "columnas"),
                             inline = TRUE),
         shiny::p(class = "bl-help",
-                 "Calidad de representación (CRFE) en el plano del gráfico, de 0 a 1000 (500 = 50 %). Se ocultan los que no llegan al mínimo."),
-        shiny::sliderInput(ns("cal_filas"), "Calidad mínima de individuos", min = 0, max = 1000,
+                 "Calidad de representación (CRFE) en el plano del gráfico, de 0 a 1000 (500 = 50 %)."),
+        shiny::sliderInput(ns("cal_filas"), "Calidad mínima de los individuos", min = 0, max = 1000,
                            value = 0, step = 50),
-        shiny::sliderInput(ns("cal_columnas"), "Calidad mínima de variables", min = 0, max = 1000,
-                           value = 0, step = 50)
-      )
-    ),
-
-    seccion_opciones(
-      "Gráfico",
+        shiny::radioButtons(ns("mal_filas"), "Individuos que no llegan al mínimo",
+                            c("Ocultar" = "ocultar", "Atenuar (gris claro)" = "atenuar"), inline = TRUE),
+        shiny::sliderInput(ns("cal_columnas"), "Calidad mínima de las variables", min = 0, max = 1000,
+                           value = 0, step = 50),
+        shiny::radioButtons(ns("mal_columnas"), "Variables que no llegan al mínimo",
+                            c("Ocultar" = "ocultar", "Atenuar (gris claro)" = "atenuar"), inline = TRUE)
+      ),
       shiny::fluidRow(
         shiny::column(6, shiny::selectInput(ns("eje_x"), "Eje horizontal", 1:2, selected = 1)),
         shiny::column(6, shiny::selectInput(ns("eje_y"), "Eje vertical", 1:2, selected = 2))
@@ -146,16 +146,72 @@ mod_gge_opciones_ui <- function(id) {
       shiny::fluidRow(
         shiny::column(6, shiny::checkboxInput(ns("voltear_h"), "Voltear de izquierda a derecha", FALSE)),
         shiny::column(6, shiny::checkboxInput(ns("voltear_v"), "Voltear de arriba a abajo", FALSE))
+      )
+    ),
+
+    # Edición del gráfico: todo lo de los individuos y luego todo lo de las
+    # variables, con las mismas opciones en el mismo orden
+    seccion_opciones(
+      "Edición del gráfico",
+      seccion_opciones(
+        "Individuos",
+        shiny::fluidRow(
+          shiny::column(6, colourpicker::colourInput(ns("color_filas"), "Color de los puntos", COLOR_FILAS)),
+          shiny::column(6, colourpicker::colourInput(ns("color_nombres_filas"), "Color de los nombres",
+                                                     COLOR_FILAS))
+        ),
+        shiny::fluidRow(
+          shiny::column(6, shiny::checkboxInput(ns("nombres_filas"), "Mostrar los nombres", TRUE)),
+          shiny::column(6, shiny::checkboxInput(ns("negrita_filas"), "Nombres en negrita", FALSE))
+        ),
+        shiny::fluidRow(
+          shiny::column(6, shiny::selectizeInput(ns("resaltar_genotipos"), "Resaltar", choices = NULL,
+                                                 multiple = TRUE)),
+          shiny::column(6, colourpicker::colourInput(ns("color_resaltar_genotipos"), "Color de los resaltados",
+                                                     GGE_COLOR_RESALTAR))
+        ),
+        shiny::fluidRow(
+          shiny::column(6, shiny::sliderInput(ns("tam_texto_filas"), "Tamaño del texto", min = 2, max = 6,
+                                              value = 3, step = 0.2)),
+          shiny::column(6, shiny::sliderInput(ns("tam_puntos_filas"), "Tamaño de los puntos", min = 0.5, max = 5,
+                                              value = 1.5, step = 0.1))
+        ),
+        shiny::sliderInput(ns("distancia_etiquetas_filas"), "Separación entre cada nombre y su punto",
+                           min = 0, max = 2, value = 0.25, step = 0.05)
       ),
-      shiny::fluidRow(
-        shiny::column(6, colourpicker::colourInput(ns("color_filas"), "Color individuos", COLOR_FILAS)),
-        shiny::column(6, colourpicker::colourInput(ns("color_columnas"), "Color variables", COLOR_VECTOR))
-      ),
-      shiny::fluidRow(
-        shiny::column(6, shiny::sliderInput(ns("tam_texto"), "Texto", min = 2, max = 6,
-                                            value = 3, step = 0.2)),
-        shiny::column(6, shiny::sliderInput(ns("tam_puntos"), "Puntos", min = 0.5, max = 5,
-                                            value = 1.5, step = 0.1))
+      seccion_opciones(
+        "Variables",
+        shiny::fluidRow(
+          shiny::column(6, colourpicker::colourInput(ns("color_columnas"), "Color de las flechas", COLOR_VECTOR)),
+          shiny::column(6, colourpicker::colourInput(ns("color_nombres_columnas"), "Color de los nombres",
+                                                     "#000000"))
+        ),
+        shiny::fluidRow(
+          shiny::column(6, shiny::checkboxInput(ns("nombres_columnas"), "Mostrar los nombres", TRUE)),
+          shiny::column(6, shiny::checkboxInput(ns("negrita"), "Nombres en negrita", TRUE))
+        ),
+        shiny::fluidRow(
+          shiny::column(6, shiny::selectizeInput(ns("resaltar_ambientes"), "Resaltar", choices = NULL,
+                                                 multiple = TRUE)),
+          shiny::column(6, colourpicker::colourInput(ns("color_resaltar_ambientes"), "Color de los resaltados",
+                                                     GGE_COLOR_RESALTAR))
+        ),
+        shiny::fluidRow(
+          shiny::column(6, shiny::sliderInput(ns("tam_texto_columnas"), "Tamaño del texto", min = 2, max = 6,
+                                              value = 3, step = 0.2)),
+          # Según la vista, las variables se dibujan como puntos o como flechas
+          shiny::column(6, shiny::conditionalPanel(
+            cuando("examinar_genotipo", "comparar_genotipos", "quien_gano_donde", "media_estabilidad",
+                   "ranking_ambientes", "ranking_genotipos"),
+            shiny::sliderInput(ns("tam_puntos_columnas"), "Tamaño de los puntos",
+                               min = 0.5, max = 5, value = 1.5, step = 0.1)),
+            shiny::conditionalPanel(
+              cuando("biplot", "examinar_ambiente", "relacion_ambientes", "discriminacion"),
+              shiny::sliderInput(ns("grosor_flechas"), "Grosor de las flechas",
+                                 min = 0.1, max = 3, value = 0.5, step = 0.1)))
+        ),
+        shiny::sliderInput(ns("distancia_etiquetas_columnas"), "Separación entre cada nombre y su punto",
+                           min = 0, max = 2, value = 0.25, step = 0.05)
       )
     ),
 
@@ -290,9 +346,29 @@ mod_gge_server <- function(id, datos, compartido = NULL) {
       shiny::updateCheckboxInput(session, "voltear_v", value = FALSE)
       colourpicker::updateColourInput(session, "color_filas", value = COLOR_FILAS)
       colourpicker::updateColourInput(session, "color_columnas", value = COLOR_VECTOR)
-      shiny::updateSliderInput(session, "tam_texto", value = 3)
-      shiny::updateSliderInput(session, "tam_puntos", value = 1.5)
+      for (g in c("filas", "columnas")) {
+        shiny::updateSliderInput(session, paste0("tam_texto_", g), value = 3)
+        shiny::updateSliderInput(session, paste0("tam_puntos_", g), value = 1.5)
+        shiny::updateSliderInput(session, paste0("distancia_etiquetas_", g), value = 0.25)
+        shiny::updateRadioButtons(session, paste0("mal_", g), selected = "ocultar")
+      }
+      shiny::updateCheckboxInput(session, "nombres_filas", value = TRUE)
+      shiny::updateCheckboxInput(session, "nombres_columnas", value = TRUE)
+      colourpicker::updateColourInput(session, "color_nombres_filas", value = COLOR_FILAS)
+      colourpicker::updateColourInput(session, "color_nombres_columnas", value = "#000000")
+      shiny::updateCheckboxInput(session, "negrita", value = TRUE)
+      shiny::updateCheckboxInput(session, "negrita_filas", value = FALSE)
+      shiny::updateSliderInput(session, "grosor_flechas", value = 0.5)
+      shiny::updateSelectizeInput(session, "resaltar_genotipos", selected = character())
+      shiny::updateSelectizeInput(session, "resaltar_ambientes", selected = character())
+      colourpicker::updateColourInput(session, "color_resaltar_genotipos", value = GGE_COLOR_RESALTAR)
+      colourpicker::updateColourInput(session, "color_resaltar_ambientes", value = GGE_COLOR_RESALTAR)
     })
+
+    # Al cambiar el color de los individuos, sus nombres lo siguen (luego se pueden cambiar aparte)
+    shiny::observeEvent(input$color_filas, {
+      colourpicker::updateColourInput(session, "color_nombres_filas", value = input$color_filas)
+    }, ignoreInit = TRUE)
 
     # Elegir un elemento conservando la elección anterior si sigue existiendo
     actualizar_lista <- function(id_input, opciones, posicion = 1) {
@@ -335,6 +411,13 @@ mod_gge_server <- function(id, datos, compartido = NULL) {
       actualizar_lista("genotipo", g)
       actualizar_lista("genotipo1", g, 1)
       actualizar_lista("genotipo2", g, 2)
+      shiny::updateSelectizeInput(session, "resaltar_genotipos", choices = g,
+                                  selected = intersect(shiny::isolate(input$resaltar_genotipos), g))
+    })
+    shiny::observeEvent(rownames(res_ok()$columnas), {
+      v <- rownames(res_ok()$columnas)
+      shiny::updateSelectizeInput(session, "resaltar_ambientes", choices = v,
+                                  selected = intersect(shiny::isolate(input$resaltar_ambientes), v))
     })
 
     shiny::observeEvent(res_ok()$dimensiones, {
@@ -362,7 +445,18 @@ mod_gge_server <- function(id, datos, compartido = NULL) {
     opciones_grafico <- shiny::reactive(list(
       color_filas = input$color_filas %||% COLOR_FILAS,
       color_columnas = input$color_columnas %||% COLOR_VECTOR,
-      tam_texto = input$tam_texto %||% 3, tam_puntos = input$tam_puntos %||% 1.5
+      tam_texto_filas = input$tam_texto_filas %||% 3, tam_texto_columnas = input$tam_texto_columnas %||% 3,
+      tam_puntos_filas = input$tam_puntos_filas %||% 1.5, tam_puntos_columnas = input$tam_puntos_columnas %||% 1.5,
+      nombres_filas = input$nombres_filas %||% TRUE, nombres_columnas = input$nombres_columnas %||% TRUE,
+      color_nombres_filas = input$color_nombres_filas %||% input$color_filas %||% COLOR_FILAS,
+      color_nombres_columnas = input$color_nombres_columnas %||% "#000000",
+      negrita = input$negrita %||% TRUE, negrita_filas = input$negrita_filas %||% FALSE,
+      grosor_flechas = input$grosor_flechas %||% 0.5,
+      distancia_etiquetas_filas = input$distancia_etiquetas_filas %||% 0.25,
+      distancia_etiquetas_columnas = input$distancia_etiquetas_columnas %||% 0.25,
+      resaltar_genotipos = input$resaltar_genotipos, resaltar_ambientes = input$resaltar_ambientes,
+      color_resaltar_genotipos = input$color_resaltar_genotipos %||% GGE_COLOR_RESALTAR,
+      color_resaltar_ambientes = input$color_resaltar_ambientes %||% GGE_COLOR_RESALTAR
     ))
 
     # Vista elegida: gráfico (calculo_gge.R), tablas y nota (tablas_gge.R)
@@ -382,7 +476,8 @@ mod_gge_server <- function(id, datos, compartido = NULL) {
         list(r, h, ejes(), ambiente = input$ambiente, genotipo = input$genotipo,
              genotipo1 = input$genotipo1, genotipo2 = input$genotipo2,
              mostrar = input$mostrar %||% "ambos", cal_filas = input$cal_filas %||% 0,
-             cal_columnas = input$cal_columnas %||% 0, titulo = titulo),
+             cal_columnas = input$cal_columnas %||% 0, mal_filas = input$mal_filas %||% "ocultar",
+             mal_columnas = input$mal_columnas %||% "ocultar", titulo = titulo),
         opciones_grafico()))
       tablas <- gge_tabla_herramienta(r, h, ejes(), ambiente = input$ambiente,
                                       genotipo = input$genotipo, genotipo1 = input$genotipo1,
@@ -516,28 +611,57 @@ mod_gge_server <- function(id, datos, compartido = NULL) {
       cadena <- function(x) encodeString(x, quote = "\"")
       og <- opciones_grafico()
       extras <- c(
-        if (!identical(og$color_filas, COLOR_FILAS)) sprintf("color_filas = \"%s\"", og$color_filas),
-        if (!identical(og$color_columnas, COLOR_VECTOR)) sprintf("color_columnas = \"%s\"", og$color_columnas),
-        if (og$tam_texto != 3) sprintf("tam_texto = %s", og$tam_texto),
-        if (og$tam_puntos != 1.5) sprintf("tam_puntos = %s", og$tam_puntos))
+        if (!identical(toupper(og$color_filas), toupper(COLOR_FILAS))) sprintf("color_filas = \"%s\"", og$color_filas),
+        if (!identical(toupper(og$color_columnas), toupper(COLOR_VECTOR))) sprintf("color_columnas = \"%s\"", og$color_columnas),
+        if (og$tam_texto_filas != 3) sprintf("tam_texto_filas = %s", og$tam_texto_filas),
+        if (og$tam_texto_columnas != 3) sprintf("tam_texto_columnas = %s", og$tam_texto_columnas),
+        if (og$tam_puntos_filas != 1.5) sprintf("tam_puntos_filas = %s", og$tam_puntos_filas),
+        if (og$tam_puntos_columnas != 1.5) sprintf("tam_puntos_columnas = %s", og$tam_puntos_columnas),
+        if (!isTRUE(og$nombres_filas)) "nombres_filas = FALSE",
+        if (!isTRUE(og$nombres_columnas)) "nombres_columnas = FALSE",
+        if (!identical(toupper(og$color_nombres_filas), toupper(og$color_filas)))
+          sprintf("color_nombres_filas = \"%s\"", og$color_nombres_filas),
+        if (!identical(toupper(og$color_nombres_columnas), "#000000"))
+          sprintf("color_nombres_columnas = \"%s\"", og$color_nombres_columnas),
+        if (!isTRUE(og$negrita)) "negrita = FALSE",
+        if (isTRUE(og$negrita_filas)) "negrita_filas = TRUE",
+        if (og$grosor_flechas != 0.5) sprintf("grosor_flechas = %s", og$grosor_flechas),
+        if (og$distancia_etiquetas_filas != 0.25)
+          sprintf("distancia_etiquetas_filas = %s", og$distancia_etiquetas_filas),
+        if (og$distancia_etiquetas_columnas != 0.25)
+          sprintf("distancia_etiquetas_columnas = %s", og$distancia_etiquetas_columnas),
+        if (length(og$resaltar_genotipos)) sprintf("resaltar_genotipos = %s", vector_a_r(og$resaltar_genotipos)),
+        if (length(og$resaltar_ambientes)) sprintf("resaltar_ambientes = %s", vector_a_r(og$resaltar_ambientes)),
+        if (length(og$resaltar_genotipos) &&
+            !identical(toupper(og$color_resaltar_genotipos), toupper(GGE_COLOR_RESALTAR)))
+          sprintf("color_resaltar_genotipos = \"%s\"", og$color_resaltar_genotipos),
+        if (length(og$resaltar_ambientes) &&
+            !identical(toupper(og$color_resaltar_ambientes), toupper(GGE_COLOR_RESALTAR)))
+          sprintf("color_resaltar_ambientes = \"%s\"", og$color_resaltar_ambientes))
       ej <- paste(c(sprintf("ejes = c(%d, %d)", ejes()[1], ejes()[2]), extras), collapse = ", ")
       h <- herramienta()
       volteados <- c(if (isTRUE(input$voltear_h)) ejes()[1], if (isTRUE(input$voltear_v)) ejes()[2])
       mostrar <- input$mostrar %||% "ambos"
       cal_f <- if (h == "biplot" && mostrar != "columnas") input$cal_filas %||% 0 else 0
       cal_c <- if (h == "biplot" && mostrar != "filas") input$cal_columnas %||% 0 else 0
+      atenuar_f <- identical(input$mal_filas, "atenuar")
+      atenuar_c <- identical(input$mal_columnas, "atenuar")
       ver_g <- if (mostrar == "columnas") ", ver_genotipos = character(0)" else
-        if (cal_f > 0) ", ver_genotipos = ver_filas" else ""
+        if (cal_f > 0) if (atenuar_f) ", atenuar_genotipos = atenuar_filas" else ", ver_genotipos = ver_filas" else ""
       ver_a <- if (mostrar == "filas") ", ver_ambientes = character(0)" else
-        if (cal_c > 0) ", ver_ambientes = ver_columnas" else ""
+        if (cal_c > 0) if (atenuar_c) ", atenuar_ambientes = atenuar_columnas" else ", ver_ambientes = ver_columnas" else ""
       llamada <- switch(h,
         biplot = c(
-          if (cal_f > 0) c(sprintf("# Individuos con calidad en el plano de al menos %s por mil", cal_f),
+          if (cal_f > 0) c(sprintf("# Individuos con calidad en el plano de al menos %s por mil%s", cal_f,
+                                   if (atenuar_f) " (los demás, en gris claro)" else ""),
             "calidad <- round(resultados$calidad_filas[, \"Plano\"])",
-            sprintf("ver_filas <- names(calidad)[calidad >= %s]", cal_f)),
-          if (cal_c > 0) c(sprintf("# Variables con calidad en el plano de al menos %s por mil", cal_c),
+            if (atenuar_f) sprintf("atenuar_filas <- names(calidad)[calidad < %s]", cal_f)
+            else sprintf("ver_filas <- names(calidad)[calidad >= %s]", cal_f)),
+          if (cal_c > 0) c(sprintf("# Variables con calidad en el plano de al menos %s por mil%s", cal_c,
+                                   if (atenuar_c) " (las demás, en gris claro)" else ""),
             "calidad <- round(resultados$calidad_columnas[, \"Plano\"])",
-            sprintf("ver_columnas <- names(calidad)[calidad >= %s]", cal_c)),
+            if (atenuar_c) sprintf("atenuar_columnas <- names(calidad)[calidad < %s]", cal_c)
+            else sprintf("ver_columnas <- names(calidad)[calidad >= %s]", cal_c)),
           sprintf("grafico <- gge_biplot_basico(desc, %s%s%s)", ej, ver_g, ver_a)),
         examinar_ambiente = sprintf("grafico <- gge_examinar_ambiente(desc, %s, %s)", cadena(input$ambiente), ej),
         examinar_genotipo = sprintf("grafico <- gge_examinar_genotipo(desc, %s, %s)", cadena(input$genotipo), ej),
@@ -659,6 +783,9 @@ texto_tabla_gge <- function(herramienta, res, ejes, filas = "Individuos", column
 
 # --- Ayudas internas ------------------------------------------------------------------
 
+# Color por defecto de los individuos resaltados (el de gge_biplot_basico)
+GGE_COLOR_RESALTAR <- "#1a9850"
+
 # Texto vacío -> valor por defecto
 `%|v|%` <- function(a, b) if (is.null(a) || !nzchar(a)) b else a
 
@@ -676,14 +803,26 @@ gge_con_calidad <- function(calidad, minimo) {
 gge_grafico_herramienta <- function(res, herramienta, ejes = c(1, 2), ambiente = NULL,
                                     genotipo = NULL, genotipo1 = NULL, genotipo2 = NULL,
                                     mostrar = "ambos", cal_filas = 0, cal_columnas = 0,
+                                    mal = "ocultar", mal_filas = mal, mal_columnas = mal,
                                     titulo = NULL, ...) {
-  if (herramienta == "biplot") calidad <- gge_resultados(res, ejes)
+  if (herramienta == "biplot") {
+    calidad <- gge_resultados(res, ejes)
+    ver_f <- gge_con_calidad(calidad$calidad_filas, cal_filas)
+    ver_c <- gge_con_calidad(calidad$calidad_columnas, cal_columnas)
+    # Atenuar: se dibujan todos y los que no llegan al mínimo van en gris claro
+    atenuar_f <- atenuar_c <- NULL
+    if (mal_filas == "atenuar" && !is.null(ver_f)) {
+      atenuar_f <- setdiff(rownames(res$filas), ver_f); ver_f <- NULL
+    }
+    if (mal_columnas == "atenuar" && !is.null(ver_c)) {
+      atenuar_c <- setdiff(rownames(res$columnas), ver_c); ver_c <- NULL
+    }
+  }
   grafico <- suppressMessages(switch(herramienta,
     biplot = gge_biplot_basico(res, ejes,
-                               ver_genotipos = if (mostrar == "columnas") character(0) else
-                                 gge_con_calidad(calidad$calidad_filas, cal_filas),
-                               ver_ambientes = if (mostrar == "filas") character(0) else
-                                 gge_con_calidad(calidad$calidad_columnas, cal_columnas), ...),
+                               ver_genotipos = if (mostrar == "columnas") character(0) else ver_f,
+                               ver_ambientes = if (mostrar == "filas") character(0) else ver_c,
+                               atenuar_genotipos = atenuar_f, atenuar_ambientes = atenuar_c, ...),
     examinar_ambiente  = gge_examinar_ambiente(res, ambiente, ejes, ...),
     examinar_genotipo  = gge_examinar_genotipo(res, genotipo, ejes, ...),
     relacion_ambientes = gge_relacion_ambientes(res, ejes, ...),
